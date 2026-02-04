@@ -1,0 +1,106 @@
+{
+  "kind": "build_request",
+  "title": "Mobile navigation improvements and simplify Dashboard Finance Trends to Net Balance only",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "On the Main Dashboard, in the Finance Trends card, remove the “Compare” option entirely and render only the Net Balance line chart. Keep Net Balance exactly as it currently behaves and appears (same data inputs, calculations, series styling, axes, tooltip formatting, and overall chart layout). Do not add or modify any other finance chart options in this card.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Remove the “Compare” option entirely.",
+          "Show only the Net Balance line chart.",
+          "Keep Net Balance exactly as it currently works (data, calculations, appearance).",
+          "Do not add or modify any other finance chart options here."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Finance Trends card no longer shows a Compare toggle/button anywhere in the UI.",
+        "The Finance Trends chart always displays the Net Balance series only.",
+        "Net Balance values and formatting match the previous Net Balance mode exactly for both 7-day and 30-day ranges."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add mobile-only navigation controls that allow users to switch between Dashboard and Daily View on phone-sized screens. The controls must be visible and usable on phones (e.g., in the top bar or fixed navigation) and must ensure mobile users are never blocked from switching views.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "On mobile view, add clear navigation buttons to switch between: Dashboard, Daily View",
+          "These buttons must be visible and usable on phones (e.g. top bar or fixed navigation).",
+          "Ensure mobile users are not blocked from switching views."
+        ]
+      },
+      "acceptanceCriteria": [
+        "On phone-sized screens, there are clearly labeled, tappable controls to switch to Dashboard and to Daily View.",
+        "Switching views works without requiring desktop/tablet breakpoints.",
+        "Desktop/tablet navigation layout remains unchanged."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "On phone-sized screens only, shorten the Daily View tab labels to single-letter abbreviations: Overview → O, Activities → A, Finance → F, Habits → H, Journal → J. Desktop and tablet labels must remain unchanged.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "On mobile only, shorten section labels so everything fits cleanly:",
+          "Overview → O",
+          "Activities → A",
+          "Finance → F",
+          "Habits → H",
+          "Journal → J",
+          "Desktop / tablet layout should remain unchanged."
+        ]
+      },
+      "acceptanceCriteria": [
+        "On phone-sized screens, the Daily View TabsTrigger labels display as O/A/F/H/J.",
+        "On tablet and desktop screens, the Daily View tab labels display as Overview/Activities/Finance/Habits/Journal.",
+        "Only the label text changes; tab values/selection behavior remain identical."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Respect the stated constraints by limiting changes strictly to: (1) removing Compare from the Main Dashboard Finance Trends card and showing only Net Balance, (2) adding mobile-only navigation between Dashboard and Daily View, and (3) mobile-only Daily View tab label abbreviations. Do not alter backend logic or any saved data. Do not change desktop/tablet layout or functionality beyond the items explicitly requested.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Do not change desktop layout or functionality beyond the items above.",
+          "Do not alter backend logic or saved data.",
+          "Focus on mobile usability and clean layout."
+        ]
+      },
+      "acceptanceCriteria": [
+        "No backend (Motoko) code changes are required for this build.",
+        "Desktop/tablet UI behavior remains the same except that Finance Trends no longer offers Compare (and only shows Net Balance).",
+        "No data model, storage, or calculation changes occur outside the already-existing Net Balance calculation."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not alter backend logic or saved data.",
+    "Do not change desktop/tablet layout or functionality beyond the explicitly requested items.",
+    "Do not edit files under frontend/immutablePaths (compose existing UI components instead)."
+  ],
+  "nonGoals": [
+    "Adding new finance chart modes, legend toggles, hover tooltips, or other analytics features beyond removing Compare and showing only Net Balance in the Finance Trends card.",
+    "Changing the Daily View desktop/tablet tab layout or adding additional tabs.",
+    "Introducing new routing architecture or backend endpoints."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

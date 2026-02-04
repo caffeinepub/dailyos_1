@@ -1,0 +1,83 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-on-the-main-dashboard-in-the-finance-trends-card-remove-the-compare-option-entirely-and-render-only-the-net-balance-line-chart-keep-net-balance-exactly-as-it-currently-behaves-and-appears-same-data-inputs-calculations-series-styling-axes-tooltip-formatting-and-overall-chart-layout-do-not-add-or-modify-any-other-finance-chart-options-in-this-card",
+      "featureTitle": "On the Main Dashboard, in the Finance Trends card, remove the “Compare” option entirely and render only the Net Balance line chart. Keep Net Balance exactly as it currently behaves and appears (same data inputs, calculations, series styling, axes, tooltip formatting, and overall chart layout). Do not add or modify any other finance chart options in this card.",
+      "files": [
+        "frontend/src/components/MainDashboard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-mobile-only-navigation-controls-that-allow-users-to-switch-between-dashboard-and-daily-view-on-phone-sized-screens-the-controls-must-be-visible-and-usable-on-phones-e-g-in-the-top-bar-or-fixed-navigation-and-must-ensure-mobile-users-are-never-blocked-from-switching-views",
+      "featureTitle": "Add mobile-only navigation controls that allow users to switch between Dashboard and Daily View on phone-sized screens. The controls must be visible and usable on phones (e.g., in the top bar or fixed navigation) and must ensure mobile users are never blocked from switching views.",
+      "files": [
+        "frontend/src/components/Header.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-on-phone-sized-screens-only-shorten-the-daily-view-tab-labels-to-single-letter-abbreviations-overview-o-activities-a-finance-f-habits-h-journal-j-desktop-and-tablet-labels-must-remain-unchanged",
+      "featureTitle": "On phone-sized screens only, shorten the Daily View tab labels to single-letter abbreviations: Overview → O, Activities → A, Finance → F, Habits → H, Journal → J. Desktop and tablet labels must remain unchanged.",
+      "files": [
+        "frontend/src/components/DailyDashboard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-respect-the-stated-constraints-by-limiting-changes-strictly-to-1-removing-compare-from-the-main-dashboard-finance-trends-card-and-showing-only-net-balance-2-adding-mobile-only-navigation-between-dashboard-and-daily-view-and-3-mobile-only-daily-view-tab-label-abbreviations-do-not-alter-backend-logic-or-any-saved-data-do-not-change-desktop-tablet-layout-or-functionality-beyond-the-items-explicitly-requested",
+      "featureTitle": "Respect the stated constraints by limiting changes strictly to: (1) removing Compare from the Main Dashboard Finance Trends card and showing only Net Balance, (2) adding mobile-only navigation between Dashboard and Daily View, and (3) mobile-only Daily View tab label abbreviations. Do not alter backend logic or any saved data. Do not change desktop/tablet layout or functionality beyond the items explicitly requested.",
+      "files": [
+        "frontend/src/components/DailyDashboard.tsx",
+        "frontend/src/components/Header.tsx",
+        "frontend/src/components/MainDashboard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

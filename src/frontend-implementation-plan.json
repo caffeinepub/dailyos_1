@@ -1,0 +1,81 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Mobile navigation improvements and Finance Trends Net Balance only",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Remove the Finance Trends Compare mode and always render the existing Net Balance line chart with identical behavior/appearance to the prior Net Balance mode.",
+      "acceptanceCriteria": [
+        "The Finance Trends card no longer shows a Compare toggle/button anywhere in the UI.",
+        "The Finance Trends chart always displays the Net Balance series only.",
+        "Net Balance values and formatting match the previous Net Balance mode exactly for both 7-day and 30-day ranges."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/MainDashboard.tsx",
+          "operation": "modify",
+          "description": "Update the FinanceTrends card to remove the Compare UI/control and any compare-only rendering; render only the existing Net Balance line chart configuration (same chartData inputs/calculation, same line styling, axes, tooltip formatter, legend behavior, and layout as the prior Net Balance mode)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Add mobile-only navigation controls to switch between Dashboard and Daily View on phone-sized screens without affecting desktop/tablet navigation layout.",
+      "acceptanceCriteria": [
+        "On phone-sized screens, there are clearly labeled, tappable controls to switch to Dashboard and to Daily View.",
+        "Switching views works without requiring desktop/tablet breakpoints.",
+        "Desktop/tablet navigation layout remains unchanged."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Add a phone-only (e.g., md:hidden) navigation control group in the header that exposes Dashboard and Daily View switches using the existing onViewChange behavior; ensure the controls are visible and tappable on small screens while leaving the existing md+ navigation unchanged."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "On phone-sized screens only, shorten Daily View tab labels to single-letter abbreviations without changing tab values or behavior.",
+      "acceptanceCriteria": [
+        "On phone-sized screens, the Daily View TabsTrigger labels display as O/A/F/H/J.",
+        "On tablet and desktop screens, the Daily View tab labels display as Overview/Activities/Finance/Habits/Journal.",
+        "Only the label text changes; tab values/selection behavior remain identical."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DailyDashboard.tsx",
+          "operation": "modify",
+          "description": "Adjust each TabsTrigger label to render a mobile-only single-letter abbreviation (O/A/F/H/J) and a tablet/desktop full label using responsive utility classes (e.g., show abbreviation below the sm breakpoint and full text at sm+), keeping all TabsTrigger values and selection behavior unchanged."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Ensure changes remain strictly scoped to the requested UI adjustments and do not alter backend logic, saved data, or desktop/tablet layout beyond the specified items.",
+      "acceptanceCriteria": [
+        "No backend (Motoko) code changes are required for this build.",
+        "Desktop/tablet UI behavior remains the same except that Finance Trends no longer offers Compare (and only shows Net Balance).",
+        "No data model, storage, or calculation changes occur outside the already-existing Net Balance calculation."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/MainDashboard.tsx",
+          "operation": "modify",
+          "description": "Confirm the Finance Trends changes are limited to removing Compare and defaulting to the existing Net Balance rendering only; avoid touching other dashboard finance cards/charts and preserve all existing Net Balance calculations/formatting."
+        },
+        {
+          "path": "frontend/src/components/Header.tsx",
+          "operation": "modify",
+          "description": "Implement mobile-only navigation with responsive classes so that desktop/tablet header layout and behavior remain unchanged, while phone users always have an obvious way to switch between Dashboard and Daily View."
+        },
+        {
+          "path": "frontend/src/components/DailyDashboard.tsx",
+          "operation": "modify",
+          "description": "Implement mobile-only tab label abbreviation purely as a responsive text change, ensuring tablet/desktop labels and all tab behavior remain unchanged."
+        }
+      ]
+    }
+  ]
+}

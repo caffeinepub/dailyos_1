@@ -1,0 +1,453 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useActor } from './useActor';
+import type { Activity, Finance, Habit, Journal, Reminder, UserProfile } from '../backend';
+import { FinanceType, JournalAccessType } from '../backend';
+import { toast } from 'sonner';
+import { Principal } from '@dfinity/principal';
+import { useInternetIdentity } from './useInternetIdentity';
+import { normalizeError } from '../utils/errors';
+
+// User Profile
+export function useGetCallerUserProfile() {
+  const { actor, isFetching: actorFetching } = useActor();
+
+  const query = useQuery<UserProfile | null>({
+    queryKey: ['currentUserProfile'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.getCallerUserProfile();
+    },
+    enabled: !!actor && !actorFetching,
+    retry: false,
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
+}
+
+export function useSaveCallerUserProfile() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (profile: UserProfile) => {
+      if (!identity) {
+        throw new Error('Please log in to save your profile.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      return await actor.saveCallerUserProfile(profile);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+// Activities
+export function useGetActivitiesByDate(date: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Activity[]>({
+    queryKey: ['activities', date],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getActivitiesByDate(date);
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateActivity() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (activity: Omit<Activity, 'activityId' | 'author'>) => {
+      if (!identity) {
+        throw new Error('Please log in to create activities.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      
+      return actor.createActivity({
+        ...activity,
+        activityId: BigInt(0),
+        author: Principal.anonymous(),
+      });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['activities', variables.date] });
+      toast.success('Activity added');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+export function useDeleteActivity() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ activityId, date }: { activityId: bigint; date: string }) => {
+      if (!identity) {
+        throw new Error('Please log in to delete activities.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      await actor.deleteActivity(activityId);
+      return date;
+    },
+    onSuccess: (date) => {
+      queryClient.invalidateQueries({ queryKey: ['activities', date] });
+      toast.success('Activity deleted');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+// Finance
+export function useGetFinancesByDate(date: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Finance[]>({
+    queryKey: ['finances', date],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getFinancesByDate(date);
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateFinance() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (finance: Omit<Finance, 'financeId' | 'author'>) => {
+      if (!identity) {
+        throw new Error('Please log in to create finance entries.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      
+      return actor.createFinance({
+        ...finance,
+        financeId: BigInt(0),
+        author: Principal.anonymous(),
+      });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['finances'] });
+      toast.success('Finance entry added');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+export function useDeleteFinance() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ financeId, date }: { financeId: bigint; date: string }) => {
+      if (!identity) {
+        throw new Error('Please log in to delete finance entries.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      await actor.deleteFinance(financeId);
+      return date;
+    },
+    onSuccess: (date) => {
+      queryClient.invalidateQueries({ queryKey: ['finances'] });
+      toast.success('Finance entry deleted');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+// Habits
+export function useGetHabitsByDate(date: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Habit[]>({
+    queryKey: ['habits', date],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getHabitsByDate(date);
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateHabit() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (habit: Omit<Habit, 'habitId' | 'author'>) => {
+      if (!identity) {
+        throw new Error('Please log in to create habits.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      
+      return actor.createHabit({
+        ...habit,
+        habitId: BigInt(0),
+        author: Principal.anonymous(),
+      });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['habits', variables.date] });
+      toast.success('Habit added');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+export function useUpdateHabit() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (habit: Habit) => {
+      if (!identity) {
+        throw new Error('Please log in to update habits.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      await actor.updateHabit(habit.habitId, habit);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['habits', variables.date] });
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+export function useDeleteHabit() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ habitId, date }: { habitId: bigint; date: string }) => {
+      if (!identity) {
+        throw new Error('Please log in to delete habits.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      await actor.deleteHabit(habitId);
+      return date;
+    },
+    onSuccess: (date) => {
+      queryClient.invalidateQueries({ queryKey: ['habits', date] });
+      toast.success('Habit deleted');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+// Journal
+export function useGetJournalByDate(date: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Journal | null>({
+    queryKey: ['journal', date],
+    queryFn: async () => {
+      if (!actor) return null;
+      return actor.getJournalByDate(date);
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateJournal() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (journal: Omit<Journal, 'journalId' | 'author'>) => {
+      if (!identity) {
+        throw new Error('Please log in to create journal entries.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      
+      return actor.createJournal({
+        ...journal,
+        journalId: BigInt(0),
+        author: Principal.anonymous(),
+      });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['journal', variables.date] });
+      toast.success('Journal saved');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+export function useUpdateJournal() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (journal: Journal) => {
+      if (!identity) {
+        throw new Error('Please log in to update journal entries.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      await actor.updateJournal(journal.journalId, journal);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['journal', variables.date] });
+      toast.success('Journal updated');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+// Reminders
+export function useGetRemindersByDate(date: string) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Reminder[]>({
+    queryKey: ['reminders', date],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getRemindersByDate(date);
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetAllReminderDates() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Set<string>>({
+    queryKey: ['reminderDates'],
+    queryFn: async () => {
+      if (!actor) return new Set<string>();
+      return new Set<string>();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateReminder() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (reminder: Omit<Reminder, 'reminderId' | 'author'>) => {
+      if (!identity) {
+        throw new Error('Please log in to create reminders.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      
+      return actor.createReminder({
+        ...reminder,
+        reminderId: BigInt(0),
+        author: Principal.anonymous(),
+      });
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['reminders', variables.targetDate] });
+      queryClient.invalidateQueries({ queryKey: ['reminderDates'] });
+      toast.success('Reminder added');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}
+
+export function useDeleteReminder() {
+  const { actor } = useActor();
+  const { identity } = useInternetIdentity();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ reminderId, date }: { reminderId: bigint; date: string }) => {
+      if (!identity) {
+        throw new Error('Please log in to delete reminders.');
+      }
+      if (!actor) {
+        throw new Error('Connection not available. Please try again.');
+      }
+      await actor.deleteReminder(reminderId);
+      return date;
+    },
+    onSuccess: (date) => {
+      queryClient.invalidateQueries({ queryKey: ['reminders', date] });
+      queryClient.invalidateQueries({ queryKey: ['reminderDates'] });
+      toast.success('Reminder deleted');
+    },
+    onError: (error: unknown) => {
+      const message = normalizeError(error);
+      toast.error(message);
+    },
+  });
+}

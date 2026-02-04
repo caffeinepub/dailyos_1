@@ -1,0 +1,40 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-03T21:22:07.308Z",
+  "summary": "REQ-3 appears implemented via mobile-only single-letter tab labels in DailyDashboard. Mobile navigation controls were added in Header, but they are icon-only and may not satisfy the requirement that controls be clearly labeled on phone-sized screens. The diff is truncated for MainDashboard’s FinanceTrends implementation, so full verification of Compare removal / Net Balance-only rendering cannot be conclusively confirmed from the provided snippet, though the file summary claims it.",
+  "missing_requirements": [
+    {
+      "id": "REQ-2",
+      "requirement": "On phone-sized screens, provide clearly labeled, tappable controls to switch between Dashboard and Daily View.",
+      "reason": "Mobile navigation buttons are present, but they show only icons (no visible text labels), which may not meet the 'clearly labeled' acceptance criterion.",
+      "evidence": [
+        "frontend/src/components/Header.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added 'Loading...' placeholder / stabilized username display logic in the header user menu.",
+      "reason": "Not requested by any requirement; this changes header behavior unrelated to the specified mobile navigation and chart/tab label changes.",
+      "evidence": [
+        "frontend/src/components/Header.tsx"
+      ]
+    },
+    {
+      "description": "Logout now clears the React Query cache (queryClient.clear()).",
+      "reason": "Not requested; modifies client-side logout behavior beyond the specified UI changes.",
+      "evidence": [
+        "frontend/src/components/Header.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.62,
+  "changed_files": [
+    "frontend-file-summaries.txt",
+    "frontend/src/components/DailyDashboard.tsx",
+    "frontend/src/components/Header.tsx",
+    "frontend/src/components/MainDashboard.tsx",
+    "project_state.json"
+  ]
+}
