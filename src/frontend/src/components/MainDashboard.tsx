@@ -5,6 +5,7 @@ import { useGetActivitiesByDate, useGetFinancesByDate, useGetHabitsByDate } from
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { FinanceType } from '../backend';
 import { getLastNDays, parseLocalDate } from '../utils/localDate';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export default function MainDashboard() {
   const [timeframe, setTimeframe] = useState<'7days' | '30days'>('7days');
@@ -51,6 +52,8 @@ export default function MainDashboard() {
 }
 
 function FinanceTrends({ dates }: { dates: string[] }) {
+  const isMobile = useIsMobile();
+  
   // Call all hooks at the top level
   const finance0 = useGetFinancesByDate(dates[0] || '');
   const finance1 = useGetFinancesByDate(dates[1] || '');
@@ -122,14 +125,19 @@ function FinanceTrends({ dates }: { dates: string[] }) {
     });
   }, [dates, financeQueries]);
 
+  // Mobile-specific chart margins to maximize width
+  const chartMargin = isMobile 
+    ? { top: 5, right: 5, bottom: 5, left: 0 }
+    : { top: 5, right: 30, bottom: 5, left: 20 };
+
   return (
     <Card className="dashboard-card dashboard-card-finance">
       <CardHeader>
         <CardTitle>Finance Trends</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className={isMobile ? 'px-1' : 'px-6'}>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
+          <LineChart data={chartData} margin={chartMargin}>
             <CartesianGrid strokeDasharray="3 3" stroke="oklch(var(--border))" />
             <XAxis 
               dataKey="date" 
@@ -140,7 +148,11 @@ function FinanceTrends({ dates }: { dates: string[] }) {
               interval={0}
               tick={{ fontSize: dates.length > 7 ? 11 : 12 }}
             />
-            <YAxis stroke="oklch(var(--muted-foreground))" />
+            <YAxis 
+              stroke="oklch(var(--muted-foreground))" 
+              width={isMobile ? 35 : 60}
+              tick={{ fontSize: isMobile ? 10 : 12 }}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'oklch(var(--card))',
@@ -149,7 +161,7 @@ function FinanceTrends({ dates }: { dates: string[] }) {
               }}
               formatter={(value: number) => `$${value.toFixed(2)}`}
             />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: isMobile ? '11px' : '14px' }} />
             <Line type="monotone" dataKey="net" stroke="oklch(var(--chart-3))" strokeWidth={2} name="Net Balance" />
           </LineChart>
         </ResponsiveContainer>
@@ -562,6 +574,8 @@ function InvestmentsOnlyChart({ dates }: { dates: string[] }) {
 }
 
 function HabitsTrends({ dates }: { dates: string[] }) {
+  const isMobile = useIsMobile();
+  
   // Call all hooks at the top level
   const habits0 = useGetHabitsByDate(dates[0] || '');
   const habits1 = useGetHabitsByDate(dates[1] || '');
@@ -624,14 +638,19 @@ function HabitsTrends({ dates }: { dates: string[] }) {
     });
   }, [dates, habitsQueries]);
 
+  // Mobile-specific chart margins to maximize width
+  const chartMargin = isMobile 
+    ? { top: 5, right: 5, bottom: 5, left: 0 }
+    : { top: 5, right: 30, bottom: 5, left: 20 };
+
   return (
     <Card className="dashboard-card dashboard-card-habits">
       <CardHeader>
         <CardTitle>Habits Completion</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className={isMobile ? 'px-1' : 'px-6'}>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
+          <LineChart data={chartData} margin={chartMargin}>
             <CartesianGrid strokeDasharray="3 3" stroke="oklch(var(--border))" />
             <XAxis 
               dataKey="date" 
@@ -642,7 +661,12 @@ function HabitsTrends({ dates }: { dates: string[] }) {
               interval={0}
               tick={{ fontSize: dates.length > 7 ? 11 : 12 }}
             />
-            <YAxis stroke="oklch(var(--muted-foreground))" domain={[0, 100]} />
+            <YAxis 
+              stroke="oklch(var(--muted-foreground))" 
+              domain={[0, 100]} 
+              width={isMobile ? 35 : 60}
+              tick={{ fontSize: isMobile ? 10 : 12 }}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'oklch(var(--card))',
@@ -651,7 +675,7 @@ function HabitsTrends({ dates }: { dates: string[] }) {
               }}
               formatter={(value: number) => `${value}%`}
             />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: isMobile ? '11px' : '14px' }} />
             <Line type="monotone" dataKey="rate" stroke="oklch(var(--chart-2))" strokeWidth={2} name="Completion Rate (%)" />
           </LineChart>
         </ResponsiveContainer>

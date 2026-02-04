@@ -1,40 +1,36 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-03T21:22:07.308Z",
-  "summary": "REQ-3 appears implemented via mobile-only single-letter tab labels in DailyDashboard. Mobile navigation controls were added in Header, but they are icon-only and may not satisfy the requirement that controls be clearly labeled on phone-sized screens. The diff is truncated for MainDashboard’s FinanceTrends implementation, so full verification of Compare removal / Net Balance-only rendering cannot be conclusively confirmed from the provided snippet, though the file summary claims it.",
+  "generatedAt": "2026-02-04T13:31:13.038Z",
+  "summary": "Diff adds a mobile viewport hook and a custom Recharts Pie label renderer that positions percentage text inside slices, and updates DailyOverviewSection to use mobile-specific pie sizing/margins. FinanceTrends in MainDashboard is modified with an isMobile flag, but the diff is truncated so full-width behavior and desktop non-impact can’t be fully verified from provided evidence.",
   "missing_requirements": [
     {
-      "id": "REQ-2",
-      "requirement": "On phone-sized screens, provide clearly labeled, tappable controls to switch between Dashboard and Daily View.",
-      "reason": "Mobile navigation buttons are present, but they show only icons (no visible text labels), which may not meet the 'clearly labeled' acceptance criterion.",
+      "id": "REQ-4",
+      "requirement": "Fix mobile-only pie chart label overflow for all pie charts that render percentage labels (not just Daily Overview), keeping percentages visible and preventing any pie SVG/legend/tooltip overflow, without affecting desktop/tablet layout.",
+      "reason": "The diff shows updates for DailyOverviewSection pie charts and adds a reusable label renderer, but there is no visible evidence that other pie charts across the app (e.g., in other sections) were updated to use the new renderer/mobile sizing constraints. Also, no evidence is shown regarding legend/tooltip overflow handling beyond DailyOverview’s margin/radius changes.",
       "evidence": [
-        "frontend/src/components/Header.tsx"
-      ]
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "Added 'Loading...' placeholder / stabilized username display logic in the header user menu.",
-      "reason": "Not requested by any requirement; this changes header behavior unrelated to the specified mobile navigation and chart/tab label changes.",
-      "evidence": [
-        "frontend/src/components/Header.tsx"
+        "frontend/src/components/sections/DailyOverviewSection.tsx",
+        "frontend/src/components/charts/PiePercentLabel.tsx"
       ]
     },
     {
-      "description": "Logout now clears the React Query cache (queryClient.clear()).",
-      "reason": "Not requested; modifies client-side logout behavior beyond the specified UI changes.",
+      "id": "REQ-5",
+      "requirement": "On mobile, Finance Trends line chart expands to full available card width and improves x-axis label spacing/readability, with no desktop/tablet layout changes and no data/logic/tooltip-format changes.",
+      "reason": "MainDashboard.tsx shows FinanceTrends now uses useIsMobile, but the relevant chart/container layout changes are not visible in the truncated diff; therefore it’s not possible to confirm that the line chart uses full available width on mobile and that desktop/tablet remains unchanged.",
       "evidence": [
-        "frontend/src/components/Header.tsx"
+        "frontend/src/components/MainDashboard.tsx",
+        "frontend-file-summaries.txt"
       ]
     }
   ],
+  "hallucinated_features": [],
   "confidence": 0.62,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/components/DailyDashboard.tsx",
-    "frontend/src/components/Header.tsx",
     "frontend/src/components/MainDashboard.tsx",
+    "frontend/src/components/charts/PiePercentLabel.tsx",
+    "frontend/src/components/sections/DailyOverviewSection.tsx",
+    "frontend/src/hooks/useIsMobile.ts",
     "project_state.json"
   ]
 }

@@ -1,11 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Improve mobile usability by adding phone-friendly navigation between Dashboard and Daily View, and simplify the Dashboard Finance Trends card to always show only the existing Net Balance chart.
+**Goal:** Fix mobile-only dashboard chart layout issues so pie chart percentage labels stay contained and the Finance Trends line chart uses full card width, without impacting desktop/tablet layouts or changing chart data/logic.
 
 **Planned changes:**
-- Remove the “Compare” option from the Main Dashboard Finance Trends card UI and always render only the Net Balance line chart (preserving existing data inputs, calculations, formatting, and styling for both 7-day and 30-day ranges).
-- Add mobile-only navigation controls on phone-sized screens to switch between Dashboard and Daily View without affecting desktop/tablet navigation.
-- On phone-sized screens only, abbreviate Daily View tab labels to single letters: Overview (O), Activities (A), Finance (F), Habits (H), Journal (J), while keeping tablet/desktop labels unchanged.
+- Update mobile-only styling/layout for Recharts pie charts so all SVG elements (including percentage labels/label lines) remain fully visible within the card boundaries.
+- Update mobile-only sizing/layout for the Finance Trends line chart container so the chart expands to the full available card width and improves x-axis label readability, without altering data/formatting.
 
-**User-visible outcome:** On phones, users can always switch between Dashboard and Daily View via clear navigation controls, Daily View tabs are compact (O/A/F/H/J), and the Dashboard Finance Trends card no longer offers Compare and consistently shows the Net Balance chart only.
+**User-visible outcome:** On small screens, pie charts no longer overflow their cards (percentages remain visible), and the Finance Trends chart appears wider and easier to read while desktop/tablet views remain unchanged.

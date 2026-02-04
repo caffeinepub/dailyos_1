@@ -15,7 +15,8 @@ export default function DailyDashboard({ selectedDate }: DailyDashboardProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Desktop date header - visible only on large screens */}
+      <div className="hidden lg:flex items-center justify-between">
         <h2 className="text-3xl font-bold">
           {displayDate.toLocaleDateString('en-US', {
             weekday: 'long',

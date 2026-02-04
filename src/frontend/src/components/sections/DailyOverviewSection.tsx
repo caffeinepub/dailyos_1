@@ -2,12 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { useGetActivitiesByDate, useGetFinancesByDate, useGetHabitsByDate, useGetJournalByDate } from '../../hooks/useQueries';
 import { FinanceType } from '../../backend';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { renderPiePercentLabel } from '../charts/PiePercentLabel';
 
 interface DailyOverviewSectionProps {
   selectedDate: string;
 }
 
 export default function DailyOverviewSection({ selectedDate }: DailyOverviewSectionProps) {
+  const isMobile = useIsMobile();
   const { data: activities = [], isLoading: activitiesLoading } = useGetActivitiesByDate(selectedDate);
   const { data: finances = [], isLoading: financesLoading } = useGetFinancesByDate(selectedDate);
   const { data: habits = [], isLoading: habitsLoading } = useGetHabitsByDate(selectedDate);
@@ -66,6 +69,11 @@ export default function DailyOverviewSection({ selectedDate }: DailyOverviewSect
 
   const isLoading = activitiesLoading || financesLoading || habitsLoading || journalLoading;
 
+  // Mobile-specific chart settings
+  const pieOuterRadius = isMobile ? 60 : 80;
+  const chartHeight = isMobile ? 220 : 250;
+  const chartMargin = isMobile ? { top: 10, right: 10, bottom: 10, left: 10 } : { top: 5, right: 5, bottom: 5, left: 5 };
+
   if (isLoading) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -85,15 +93,15 @@ export default function DailyOverviewSection({ selectedDate }: DailyOverviewSect
           {activityData.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">No activities logged for this day</p>
           ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <PieChart margin={chartMargin}>
                 <Pie
                   data={activityData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
+                  label={(props) => renderPiePercentLabel({ ...props, isMobile })}
+                  outerRadius={pieOuterRadius}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -118,15 +126,15 @@ export default function DailyOverviewSection({ selectedDate }: DailyOverviewSect
           {financeChartData.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">No finance entries for this day</p>
           ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <PieChart margin={chartMargin}>
                 <Pie
                   data={financeChartData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
+                  label={(props) => renderPiePercentLabel({ ...props, isMobile })}
+                  outerRadius={pieOuterRadius}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -151,15 +159,15 @@ export default function DailyOverviewSection({ selectedDate }: DailyOverviewSect
           {habitsChartData.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">No habits tracked for this day</p>
           ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <PieChart margin={chartMargin}>
                 <Pie
                   data={habitsChartData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
+                  label={(props) => renderPiePercentLabel({ ...props, isMobile })}
+                  outerRadius={pieOuterRadius}
                   fill="#8884d8"
                   dataKey="value"
                 >

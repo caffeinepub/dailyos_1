@@ -10,7 +10,7 @@ import ProfileSetupModal from './components/ProfileSetupModal';
 import { Toaster } from './components/ui/sonner';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useGetCallerUserProfile } from './hooks/useQueries';
-import { getTodayLocal } from './utils/localDate';
+import { getTodayLocal, parseLocalDate } from './utils/localDate';
 
 export default function App() {
   const [selectedDate, setSelectedDate] = useState<string>(getTodayLocal());
@@ -29,6 +29,8 @@ export default function App() {
     (userProfile !== null && userProfile !== undefined && !userProfile.username.trim())
   );
 
+  const displayDate = parseLocalDate(selectedDate);
+
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <div className="flex flex-col min-h-screen bg-background">
@@ -36,18 +38,30 @@ export default function App() {
         
         <main className="flex-1 container mx-auto px-4 py-6">
           {view === 'daily' ? (
-            <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
-              <div className="space-y-6 lg:sticky lg:top-6">
-                <CalendarView 
-                  selectedDate={selectedDate} 
-                  onDateSelect={setSelectedDate}
-                />
-                <RemindersSection selectedDate={selectedDate} />
+            <>
+              {/* Mobile date header - visible only on small screens */}
+              <h2 className="text-2xl font-bold mb-6 lg:hidden">
+                {displayDate.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </h2>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
+                <div className="space-y-6 lg:sticky lg:top-6">
+                  <CalendarView 
+                    selectedDate={selectedDate} 
+                    onDateSelect={setSelectedDate}
+                  />
+                  <RemindersSection selectedDate={selectedDate} />
+                </div>
+                <div>
+                  <DailyDashboard selectedDate={selectedDate} />
+                </div>
               </div>
-              <div>
-                <DailyDashboard selectedDate={selectedDate} />
-              </div>
-            </div>
+            </>
           ) : (
             <MainDashboard />
           )}

@@ -1,103 +1,68 @@
 {
   "kind": "build_request",
-  "title": "Mobile navigation improvements and simplify Dashboard Finance Trends to Net Balance only",
+  "title": "Mobile-only chart layout fixes (pie label overflow + Finance Trends width)",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "On the Main Dashboard, in the Finance Trends card, remove the “Compare” option entirely and render only the Net Balance line chart. Keep Net Balance exactly as it currently behaves and appears (same data inputs, calculations, series styling, axes, tooltip formatting, and overall chart layout). Do not add or modify any other finance chart options in this card.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "Remove the “Compare” option entirely.",
-          "Show only the Net Balance line chart.",
-          "Keep Net Balance exactly as it currently works (data, calculations, appearance).",
-          "Do not add or modify any other finance chart options here."
-        ]
-      },
-      "acceptanceCriteria": [
-        "The Finance Trends card no longer shows a Compare toggle/button anywhere in the UI.",
-        "The Finance Trends chart always displays the Net Balance series only.",
-        "Net Balance values and formatting match the previous Net Balance mode exactly for both 7-day and 30-day ranges."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Add mobile-only navigation controls that allow users to switch between Dashboard and Daily View on phone-sized screens. The controls must be visible and usable on phones (e.g., in the top bar or fixed navigation) and must ensure mobile users are never blocked from switching views.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "On mobile view, add clear navigation buttons to switch between: Dashboard, Daily View",
-          "These buttons must be visible and usable on phones (e.g. top bar or fixed navigation).",
-          "Ensure mobile users are not blocked from switching views."
-        ]
-      },
-      "acceptanceCriteria": [
-        "On phone-sized screens, there are clearly labeled, tappable controls to switch to Dashboard and to Daily View.",
-        "Switching views works without requiring desktop/tablet breakpoints.",
-        "Desktop/tablet navigation layout remains unchanged."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "On phone-sized screens only, shorten the Daily View tab labels to single-letter abbreviations: Overview → O, Activities → A, Finance → F, Habits → H, Journal → J. Desktop and tablet labels must remain unchanged.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "On mobile only, shorten section labels so everything fits cleanly:",
-          "Overview → O",
-          "Activities → A",
-          "Finance → F",
-          "Habits → H",
-          "Journal → J",
-          "Desktop / tablet layout should remain unchanged."
-        ]
-      },
-      "acceptanceCriteria": [
-        "On phone-sized screens, the Daily View TabsTrigger labels display as O/A/F/H/J.",
-        "On tablet and desktop screens, the Daily View tab labels display as Overview/Activities/Finance/Habits/Journal.",
-        "Only the label text changes; tab values/selection behavior remain identical."
-      ]
-    },
-    {
       "id": "REQ-4",
-      "text": "Respect the stated constraints by limiting changes strictly to: (1) removing Compare from the Main Dashboard Finance Trends card and showing only Net Balance, (2) adding mobile-only navigation between Dashboard and Daily View, and (3) mobile-only Daily View tab label abbreviations. Do not alter backend logic or any saved data. Do not change desktop/tablet layout or functionality beyond the items explicitly requested.",
-      "target": "both",
+      "text": "Fix mobile-only pie chart label overflow so that all pie chart content (including percentage labels) stays fully visible and contained within the dashboard card boundaries on small screens, without changing desktop layout and without removing percentages.",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-3"
         ],
         "quotes": [
-          "Do not change desktop layout or functionality beyond the items above.",
-          "Do not alter backend logic or saved data.",
-          "Focus on mobile usability and clean layout."
+          "On mobile, pie charts (e.g. Finance Distribution) render correctly visually, but the percentage labels (e.g. “50%”) overflow the card bounds.",
+          "Ensure all pie chart content fits entirely within the card on mobile.",
+          "Apply this fix only to mobile layout",
+          "Do not remove percentages",
+          "Do not affect desktop layout",
+          "Do not let any chart element overflow its container"
         ]
       },
       "acceptanceCriteria": [
-        "No backend (Motoko) code changes are required for this build.",
-        "Desktop/tablet UI behavior remains the same except that Finance Trends no longer offers Compare (and only shows Net Balance).",
-        "No data model, storage, or calculation changes occur outside the already-existing Net Balance calculation."
+        "On mobile viewport widths, all Recharts PieChart percentage labels are fully visible and never clipped by the card container.",
+        "On mobile, no pie chart SVG elements (labels, label lines, slices, legend/tooltip containers if present) render outside the visible card content area.",
+        "Percentages remain displayed on mobile (not removed/hidden).",
+        "Desktop/tablet layout and sizing for the same charts remains visually unchanged.",
+        "The fix applies to pie charts used in the Daily Overview section and any other pie charts that render percentage labels."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Fix mobile-only Finance Trends chart sizing so the line chart expands horizontally to use the full available card width (improving readability of x-axis labels and the plotted line) without changing chart data/logic and without reducing desktop card width or affecting desktop layout.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Inside the Finance Trends card, the chart is too compressed.",
+          "Expand/stretch the chart horizontally to use the full available width of the card.",
+          "Do not change chart data or logic — layout only.",
+          "This fix applies to mobile view only.",
+          "Do not reduce card width on desktop.",
+          "Do not introduce new empty space; prioritize content filling the screen naturally."
+        ]
+      },
+      "acceptanceCriteria": [
+        "On mobile viewport widths, the Finance Trends line chart uses the full available width inside its card (no unnecessary horizontal compression).",
+        "On mobile, x-axis labels are readable and evenly spaced relative to the available width (no excessive crowding caused by container padding/margins).",
+        "No changes are made to the Finance Trends data series, query logic, or tooltip formatting—only layout/styling changes.",
+        "Desktop/tablet layout and sizing for Finance Trends remains visually unchanged."
       ]
     }
   ],
   "constraints": [
-    "Do not alter backend logic or saved data.",
-    "Do not change desktop/tablet layout or functionality beyond the explicitly requested items.",
-    "Do not edit files under frontend/immutablePaths (compose existing UI components instead)."
+    "Frontend-only changes (layout/styling) for the described issues; do not change backend logic or schemas.",
+    "Apply fixes only to mobile layout; desktop layout must not be affected.",
+    "Do not remove percentage labels from pie charts.",
+    "Do not allow any chart element to overflow its container."
   ],
   "nonGoals": [
-    "Adding new finance chart modes, legend toggles, hover tooltips, or other analytics features beyond removing Compare and showing only Net Balance in the Finance Trends card.",
-    "Changing the Daily View desktop/tablet tab layout or adding additional tabs.",
-    "Introducing new routing architecture or backend endpoints."
+    "Do not change chart data, aggregation, or query behavior.",
+    "Do not redesign dashboard cards or change desktop spacing/layout.",
+    "Do not introduce new chart types or replace the charting library."
   ],
   "imageRequirements": {
     "required": [],

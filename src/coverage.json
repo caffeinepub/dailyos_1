@@ -1,74 +1,52 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-03T21:22:07.354Z",
+  "generatedAt": "2026-02-04T13:31:13.541Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-1",
-        "summary": "On the Main Dashboard, in the Finance Trends card, remove the “Compare” option entirely and render only the Net Balance line chart. Keep Net Balance exactly as it currently behaves and appears (same data inputs, calculations, series styling, axes, tooltip formatting, and overall chart layout). Do not add or modify any other finance chart options in this card.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/MainDashboard.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/MainDashboard.tsx"
-        ]
-      },
-      {
-        "id": "REQ-2",
-        "summary": "Add mobile-only navigation controls that allow users to switch between Dashboard and Daily View on phone-sized screens. The controls must be visible and usable on phones (e.g., in the top bar or fixed navigation) and must ensure mobile users are never blocked from switching views.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/Header.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/Header.tsx"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "On phone-sized screens only, shorten the Daily View tab labels to single-letter abbreviations: Overview → O, Activities → A, Finance → F, Habits → H, Journal → J. Desktop and tablet labels must remain unchanged.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/DailyDashboard.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/DailyDashboard.tsx"
-        ]
-      },
-      {
         "id": "REQ-4",
-        "summary": "Respect the stated constraints by limiting changes strictly to: (1) removing Compare from the Main Dashboard Finance Trends card and showing only Net Balance, (2) adding mobile-only navigation between Dashboard and Daily View, and (3) mobile-only Daily View tab label abbreviations. Do not alter backend logic or any saved data. Do not change desktop/tablet layout or functionality beyond the items explicitly requested.",
+        "summary": "Fix mobile-only pie chart label overflow so that all pie chart content (including percentage labels) stays fully visible and contained within the dashboard card boundaries on small screens, without changing desktop layout and without removing percentages.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/MainDashboard.tsx",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/DailyDashboard.tsx"
+          "frontend/src/hooks/useIsMobile.ts",
+          "frontend/src/components/charts/PiePercentLabel.tsx",
+          "frontend/src/components/sections/DailyOverviewSection.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/MainDashboard.tsx",
-          "frontend/src/components/Header.tsx",
-          "frontend/src/components/DailyDashboard.tsx"
+          "frontend/src/hooks/useIsMobile.ts",
+          "frontend/src/components/charts/PiePercentLabel.tsx",
+          "frontend/src/components/sections/DailyOverviewSection.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Fix mobile-only Finance Trends chart sizing so the line chart expands horizontally to use the full available card width (improving readability of x-axis labels and the plotted line) without changing chart data/logic and without reducing desktop card width or affecting desktop layout.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/MainDashboard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/MainDashboard.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/DailyDashboard.tsx",
-    "frontend/src/components/Header.tsx",
     "frontend/src/components/MainDashboard.tsx",
+    "frontend/src/components/charts/PiePercentLabel.tsx",
+    "frontend/src/components/sections/DailyOverviewSection.tsx",
+    "frontend/src/hooks/useIsMobile.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

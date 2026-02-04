@@ -1,488 +1,351 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 55,
-  "summary": "DailyOS is a personal daily tracking web app built on the Internet Computer. Users authenticate via Internet Identity, then can record and review per-day data including time-based activities, finance transactions (income/expense/investment), habits (with completion), a daily journal entry, and date-specific reminders. The UI provides a calendar-based daily view with tabbed sections and a separate analytics dashboard that visualizes weekly/monthly trends using charts. A Motoko canister backend stores data keyed by incremental IDs and enforces principal-based access control with admin/user/guest roles.",
+  "projectStateVersion": 65,
+  "summary": "DailyOS is a personal daily tracking web app built on the Internet Computer (ICP). Users authenticate with Internet Identity, then create and review per-day records: time-based activities, finance transactions (income/expense/investment), habits (with completion toggles), a daily journal entry, and date-specific reminders. The frontend provides a calendar-driven Daily View with tabbed sections plus a separate Main Dashboard that visualizes recent 7- and 30-day trends via charts. A Motoko canister backend stores user-scoped data keyed by incremental IDs and enforces principal-based access control with admin/user/guest roles.",
   "existing_features": [
     {
       "id": "IF-1",
-      "title": "Internet Identity authentication provider and session management",
+      "title": "Internet Identity authentication provider and session persistence",
       "synonyms": [
         "II login",
         "AuthClient integration",
         "Identity context"
       ],
-      "description": "Provides an InternetIdentityProvider context that initializes an AuthClient, restores stored identities, supports login via Internet Identity, and logout/clear. Exposes loginStatus flags and the current Identity for gating UI actions.",
+      "description": "Provides an InternetIdentityProvider that creates an AuthClient, restores a stored identity on reload, supports login/logout, and exposes login status flags and the current Identity to the app.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-2",
-      "title": "ICP actor creation and lifecycle management",
+      "title": "Login button with stale-session recovery",
       "synonyms": [
-        "useActor",
-        "authenticated actor",
-        "anonymous actor"
+        "LoginButton",
+        "retry login",
+        "react-query cache clear on auth"
       ],
-      "description": "Creates an ICP canister actor via createActorWithConfig. Uses an anonymous actor when not authenticated and an identity-backed actor when logged in. On actor creation, calls _initializeAccessControlWithSecret using a secret token from the URL hash/session. Invalidates and refetches all non-actor React Query queries when the actor changes.",
+      "description": "Implements a login UI that triggers Internet Identity authentication and, if a stale authenticated session is detected, clears the React Query cache and retries login.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-3",
-      "title": "Role-based access control with admin bootstrapping",
+      "title": "ICP canister actor creation and access-control initialization",
       "synonyms": [
-        "access-control",
-        "admin token init",
-        "mixin authorization"
+        "useActor",
+        "createActorWithConfig",
+        "authenticated actor"
       ],
-      "description": "Implements admin/user/guest roles in Motoko. A mixin exposes initialization, role lookup, admin check, and role assignment. The first principal to initialize with the correct admin token becomes admin; other principals become users. Backend methods enforce permissions and ownership checks (admin override).",
+      "description": "Creates an anonymous or identity-backed canister actor and initializes backend access control by calling _initializeAccessControlWithSecret with a secret token sourced from the URL hash/session. Invalidates and refetches non-actor queries when the actor changes.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-4",
-      "title": "User profile creation and retrieval",
+      "title": "Role-based access control with admin bootstrapping",
       "synonyms": [
-        "profile setup",
-        "username profile"
+        "access-control",
+        "MixinAuthorization",
+        "admin token"
       ],
-      "description": "Supports saving and fetching the caller’s UserProfile. Frontend includes a ProfileSetupModal that appears when an authenticated user has no profile and allows setting a username. Backend stores profiles keyed by Principal and enforces permissions for reading/updating.",
+      "description": "Motoko access-control module supports #admin/#user/#guest roles. The first eligible principal can become admin by presenting the correct token; admins can assign roles. Backend methods gate actions via hasPermission and ownership checks.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-5",
-      "title": "Daily calendar navigation and date selection",
+      "title": "User profile persistence and forced username setup modal",
       "synonyms": [
-        "CalendarView",
-        "monthly calendar",
-        "Today button"
+        "UserProfile",
+        "ProfileSetupModal",
+        "username repair mode"
       ],
-      "description": "Interactive monthly calendar UI with previous/next month navigation, a Today shortcut, selected-date highlighting, and optional reminder indicators on dates. Selecting a day updates the active date used across the daily dashboard.",
+      "description": "Supports fetching and saving the caller’s profile in the canister. The UI forces profile setup when authenticated users have no profile or a blank username, allowing username creation/repair via a modal dialog.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-6",
-      "title": "Daily dashboard with tabbed sections",
+      "title": "URL hash secret extraction with session persistence",
       "synonyms": [
-        "Daily view",
-        "Tabs layout"
+        "urlParams",
+        "getSecretParameter",
+        "sessionStorage secret"
       ],
-      "description": "Renders a daily page with date header, reminders section, and tabs for Overview (activities), Finance, Habits, and Journal. The daily dashboard is driven by the selectedDate state from the calendar.",
+      "description": "Extracts sensitive parameters (e.g., caffeineAdminToken) from the URL hash, stores them in sessionStorage for the session, and removes them from the URL hash to reduce history/referrer leakage.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-7",
-      "title": "Time-based activity tracking (create/list/delete)",
+      "title": "Timezone-safe local date utilities",
       "synonyms": [
-        "activities",
-        "time tracking",
-        "overview section"
+        "formatLocalDate",
+        "parseLocalDate",
+        "YYYY-MM-DD utilities"
       ],
-      "description": "Allows users to create activities for a specific date with optional start/end times or duration. Activities are listed per day with computed duration display. Users can delete their activities. Backend enforces author ownership and user permission.",
+      "description": "Provides helper functions to format/parse local YYYY-MM-DD strings and generate date ranges (e.g., last N days) without UTC conversion/off-by-one issues.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-8",
-      "title": "Finance tracking with categorization and visualization",
+      "title": "App layout with Daily View and Main Dashboard switching",
       "synonyms": [
-        "transactions",
-        "income/expense/investment",
-        "finance pie chart"
+        "App.tsx view switch",
+        "daily vs main"
       ],
-      "description": "Allows users to add finance entries for a date, categorized as income, expense, or investment, storing amounts as cents (Nat). Daily totals and a pie chart visualization are shown, and entries can be deleted. Backend enforces per-user access.",
+      "description": "Root app maintains selected date and toggles between Daily View (calendar-driven per-day tracking) and the Main Dashboard (analytics). Includes global footer and toast Toaster.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-9",
-      "title": "Habit checklist with completion toggling and progress chart",
+      "title": "Header navigation with theme toggle, user dropdown, and mobile-only view controls",
       "synonyms": [
-        "habits",
-        "completion rate",
-        "habit pie chart"
-      ],
-      "description": "Supports adding habits per date, listing them with a checkbox to toggle completion (update), deleting habits, and showing completion rate plus a pie chart of completed vs not completed. Backend provides create/list/update/delete with ownership checks.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-10",
-      "title": "Daily journal entry (create/read/update)",
-      "synonyms": [
-        "journal",
-        "daily notes"
-      ],
-      "description": "Provides a per-date journal editor that loads an existing journal entry or creates one on save. Supports updating content and timestamps. Backend stores journals and returns the journal for a date (or null), enforcing permissions and ownership.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-11",
-      "title": "Date-based reminders (create/list/delete)",
-      "synonyms": [
-        "reminders",
-        "notifications list"
-      ],
-      "description": "Allows users to add reminders for a target date with title and optional description, list reminders for the selected date, and delete reminders. Backend enforces per-user reminder access.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-12",
-      "title": "Analytics dashboard with weekly/monthly trend charts",
-      "synonyms": [
-        "MainDashboard",
-        "trends view",
-        "weekly/monthly charts"
-      ],
-      "description": "Provides a separate dashboard view showing weekly (last 7 days) and monthly (current month) trends. Includes finance trend line charts with display modes (compare, income-only, expense-only, net balance), habit completion rate line charts, and a time-spent pie chart aggregating activity durations by name.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-13",
-      "title": "Theme toggle and Tailwind OKLCH design system",
-      "synonyms": [
-        "dark mode",
+        "Header",
         "next-themes",
-        "design tokens"
+        "mobile nav icons"
       ],
-      "description": "Implements light/dark theme switching via next-themes and a Tailwind configuration using OKLCH CSS variables for consistent theming across UI components and charts.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-14",
-      "title": "User feedback via toast notifications",
-      "synonyms": [
-        "sonner",
-        "toasts"
-      ],
-      "description": "Uses sonner to display success/error messages for common mutations such as adding/deleting activities, finances, habits, reminders, and saving/updating journals or profiles.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-15",
-      "title": "Secure admin-token retrieval from URL hash with session persistence",
-      "synonyms": [
-        "urlParams",
-        "secret hash parameter",
-        "sessionStorage token"
-      ],
-      "description": "Provides utilities to extract sensitive parameters (e.g., caffeineAdminToken) from the URL hash, persist them in sessionStorage, and clear them from the URL to reduce history/referrer leakage. Used during access control initialization in useActor.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-16",
-      "title": "Backend utility endpoints for calendar/week/health checks",
-      "synonyms": [
-        "calendar query",
-        "week query",
-        "care query"
-      ],
-      "description": "Exposes simple read-only canister query methods (calendar, week, care) that return basic data and can be used for testing connectivity or future calendar-related expansions.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-17",
-      "title": "Analytics dashboard rolling ranges (Last 7 days / Last 30 days) with corrected per-day charting",
-      "synonyms": [
-        "AR-1",
-        "rolling range selector",
-        "last 7 days",
-        "last 30 days"
-      ],
-      "description": "MainDashboard timeframe selection uses rolling ranges that include today (Last 7 days / Last 30 days) and renders charts with correctly aligned per-day data for those ranges.",
-      "reqIds": [
-        "AR-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-18",
-      "title": "Finance trend chart Compare mode with separate Income and Expense lines",
-      "synonyms": [
-        "AR-2",
-        "compare mode lines",
-        "income vs expense"
-      ],
-      "description": "Finance trends chart Compare mode renders separate series/lines for Income (green) and Expense (orange) across the same date range; other display modes remain unchanged.",
-      "reqIds": [
-        "AR-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-19",
-      "title": "Bulk reminder-date indicator support (avoid per-day reminder queries)",
-      "synonyms": [
-        "reminder dots",
-        "useGetAllReminderDates",
-        "calendar indicators"
-      ],
-      "description": "Calendar reminder indicators are supported via a bulk reminder-dates query, avoiding per-day reminder fetches in month view.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-20",
-      "title": "Backend/Frontend range-based aggregation queries for dashboards",
-      "synonyms": [
-        "batched trend queries",
-        "range endpoints",
-        "dashboard query optimization"
-      ],
-      "description": "Dashboards use range/batch queries for analytics (e.g., finance/habits/activities over a date range) to reduce per-day query fanout and improve performance.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-21",
-      "title": "Global authenticated header with username + logout on all authenticated pages",
-      "synonyms": [
-        "AR-4",
-        "authenticated header",
-        "top-right user menu"
-      ],
-      "description": "Adds a persistent global Header for authenticated routes that displays the active user's username (loaded from canister UserProfile) and provides logout. If a profile exists but username is missing, the user is prompted once to set it via the profile setup flow; the displayed username always reflects the active principal/profile and persists across sessions.",
-      "reqIds": [
-        "AR-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-22",
-      "title": "Dashboard UI polish with section-colored card accents, full overlays, shadows, and hover/pop effects",
-      "synonyms": [
-        "AR-3",
-        "AR-5",
-        "card overlays",
-        "section accent colors"
-      ],
-      "description": "Implements a refined dashboard visual system across Daily/Main dashboards: cards have full-surround overlay/border treatments, subtle shadows, and hover/pop interactions. Sections use distinct accent colors (Overview=blue, Finance=green, Habits=purple, Journal=orange) in a consistent, subtle, clean style.",
-      "reqIds": [
-        "AR-3",
-        "AR-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-23",
-      "title": "Global button styling via shared AppButton / UI button component",
-      "synonyms": [
-        "AR-6",
-        "button system",
-        "consistent buttons"
-      ],
-      "description": "Standardizes button appearance across the app using a shared button component (AppButton / ui/button) with consistent sizing, prominence, and hover/transition effects aligned with the dashboard interaction style.",
-      "reqIds": [
-        "AR-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-24",
-      "title": "Finance dashboard enhanced Compare mode (Income/Expense/Investment), Investments-only chart, and category percentage breakdown",
-      "synonyms": [
-        "AR-11",
-        "finance compare 3-series",
-        "investments-only chart",
-        "finance category breakdown"
-      ],
-      "description": "Finance dashboard charts now support a Compare mode that plots three independent series (Income, Expenses, Investments) over the same selected rolling range (Last 7/Last 30 days) with correct date alignment (Last 7 = today + previous 6; Last 30 = today + previous 29). Adds an Investments-only chart using the same range selector/data source and a percentage breakdown computed from absolute totals per category over the same aligned range.",
-      "reqIds": [
-        "AR-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-25",
-      "title": "Journal section neutral cream border/overlay styling (no interior fill)",
-      "synonyms": [
-        "AR-9",
-        "journal card styling"
-      ],
-      "description": "Journal dashboard card uses a neutral cream accent applied to the border/overlay only (no interior fill), matching the global card overlay/hover styling system.",
-      "reqIds": [
-        "AR-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-26",
-      "title": "Daily view layout/navigation adjustments (calendar+reminders stacking, card alignment, nav order)",
-      "synonyms": [
-        "AR-10",
-        "layout/navigation-only update",
-        "sidebar calendar+reminders"
-      ],
-      "description": "Layout-only changes: left sidebar stacks calendar on top with reminders box directly below for selected-day reminders; right-side Overview/Finance/Habits/Journal cards align to the top of the calendar; top navigation buttons reordered so Dashboard is left and Daily View is right. No backend/auth/data handling changes intended.",
-      "reqIds": [
-        "AR-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-27",
-      "title": "Authenticated save flow reliability hardening across create/save actions",
-      "synonyms": [
-        "AR-8",
-        "persist reliability",
-        "authenticated principal enforcement"
-      ],
-      "description": "Hardens/verifies that create/save mutations execute with a valid authenticated actor/principal and reliably persist after login, reducing cases where saves appear to succeed but do not persist.",
-      "reqIds": [
-        "AR-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-28",
-      "title": "Daily View new read-only Overview tab + rename Overview to Activities",
-      "synonyms": [
-        "AR-12",
-        "DailyOverviewSection",
-        "Activities tab rename"
-      ],
-      "description": "Daily View tabs updated so the prior \"Overview\" tab is renamed to \"Activities\" (label-only change), and a new first tab \"Overview\" is added as read-only. The new Overview tab aggregates same-day data into four summary cards: Activities time distribution pie, Finance category pie (income/expense/investment), Habits completion pie, and Journal text preview. Implementation reuses existing per-day queries/data sources and does not duplicate data entry logic.",
-      "reqIds": [
-        "AR-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-29",
-      "title": "Main Dashboard finance trends Compare mode renders three series (Income/Expenses/Investments) over rolling ranges",
-      "synonyms": [
-        "AR-13",
-        "MainDashboard finance compare 3-series",
-        "finance trends compare fix"
-      ],
-      "description": "Main Dashboard Finance Trends Compare mode now renders three simultaneous line series—Income (green), Expenses (orange/red), Investments (blue/purple)—over the selected rolling range (Last 7 / Last 30 days) using the same aligned data source as Net Balance. Net Balance mode remains unchanged, and Compare mode no longer renders empty when data exists.",
-      "reqIds": [
-        "AR-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-30",
-      "title": "Daily View calendar container visual polish (yellow border/glow/overlay)",
-      "synonyms": [
-        "AR-14",
-        "calendar container highlight",
-        "calendar box standout styling"
-      ],
-      "description": "Daily View calendar container styling updated to visually stand out with a yellow border/glow/overlay treatment. No functional changes to calendar behavior (date selection/highlighting/reminder indicators).",
-      "reqIds": [
-        "AR-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-on-the-main-dashboard-in-the-finance-trends-card-remove-the-compare-option-entirely-and-render-only-the-net-balance-line-chart-keep-net-balance-exactly-as-it-currently-behaves-and-appears-same-data-inputs-calculations-series-styling-axes-tooltip-formatting-and-overall-chart-layout-do-not-add-or-modify-any-other-finance-chart-options-in-this-card",
-      "title": "On the Main Dashboard, in the Finance Trends card, remove the “Compare” option entirely and render only the Net Balance line chart. Keep Net Balance exactly as it currently behaves and appears (same data inputs, calculations, series styling, axes, tooltip formatting, and overall chart layout). Do not add or modify any other finance chart options in this card.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-mobile-only-navigation-controls-that-allow-users-to-switch-between-dashboard-and-daily-view-on-phone-sized-screens-the-controls-must-be-visible-and-usable-on-phones-e-g-in-the-top-bar-or-fixed-navigation-and-must-ensure-mobile-users-are-never-blocked-from-switching-views",
-      "title": "Add mobile-only navigation controls that allow users to switch between Dashboard and Daily View on phone-sized screens. The controls must be visible and usable on phones (e.g., in the top bar or fixed navigation) and must ensure mobile users are never blocked from switching views.",
+      "description": "Top header shows brand, desktop navigation buttons, and mobile-only icon buttons to switch between Dashboard and Daily View on small screens. Includes theme toggle and authenticated user dropdown with username/loading placeholder and logout.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-on-phone-sized-screens-only-shorten-the-daily-view-tab-labels-to-single-letter-abbreviations-overview-o-activities-a-finance-f-habits-h-journal-j-desktop-and-tablet-labels-must-remain-unchanged",
-      "title": "On phone-sized screens only, shorten the Daily View tab labels to single-letter abbreviations: Overview → O, Activities → A, Finance → F, Habits → H, Journal → J. Desktop and tablet labels must remain unchanged.",
+      "id": "IF-10",
+      "title": "Calendar month view with date selection and Today shortcut",
+      "synonyms": [
+        "CalendarView",
+        "monthly calendar",
+        "selected date"
+      ],
+      "description": "Interactive calendar supports month navigation, selecting a day to update the active date, and a Today button to jump back to the current date. Selected and today states are visually distinguished.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-11",
+      "title": "Reminders for a target date (create/list/delete)",
+      "synonyms": [
+        "RemindersSection",
+        "daily reminders"
+      ],
+      "description": "Allows authenticated users to add reminders (title + optional description) for the selected day, list them, and delete them. Uses dialogs for entry and react-query cache invalidation.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-12",
+      "title": "Time-based activity tracking per date (create/list/delete)",
+      "synonyms": [
+        "OverviewSection",
+        "activities",
+        "time tracking"
+      ],
+      "description": "Users can create activities for a selected date with optional start/end times or explicit duration, view the day’s list, see computed duration display, and delete activities. Backend enforces per-caller access and ownership.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-13",
+      "title": "Finance tracking per date (create/list/delete) with daily summary pie",
+      "synonyms": [
+        "FinanceSection",
+        "transactions",
+        "income/expense/investment"
+      ],
+      "description": "Users can add finance entries (stored as cents) categorized as income/expense/investment, view daily transactions, see daily totals and a pie chart breakdown, and delete entries. Backend enforces per-caller access.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-14",
+      "title": "Habit checklist per date with completion toggle and progress visualization",
+      "synonyms": [
+        "HabitsSection",
+        "toggle completion",
+        "completion rate"
+      ],
+      "description": "Users can add habits for a day, toggle completion (update), delete habits, and view completion rate plus a pie chart of completed vs not completed.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-15",
+      "title": "Daily journal entry per date (create/read/update) with save button gating",
+      "synonyms": [
+        "JournalSection",
+        "daily notes"
+      ],
+      "description": "Loads an existing journal entry for the selected date or creates one on first save; supports updating content and timestamps. Editor is disabled when not authenticated.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-16",
+      "title": "Daily View tabbed sections with mobile-only abbreviated labels",
+      "synonyms": [
+        "DailyDashboard tabs",
+        "O/A/F/H/J labels",
+        "responsive tab labels"
+      ],
+      "description": "Daily View uses five tabs (Overview, Activities, Finance, Habits, Journal). On phone-sized screens, tab labels abbreviate to O/A/F/H/J while tablet/desktop retains full labels.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-respect-the-stated-constraints-by-limiting-changes-strictly-to-1-removing-compare-from-the-main-dashboard-finance-trends-card-and-showing-only-net-balance-2-adding-mobile-only-navigation-between-dashboard-and-daily-view-and-3-mobile-only-daily-view-tab-label-abbreviations-do-not-alter-backend-logic-or-any-saved-data-do-not-change-desktop-tablet-layout-or-functionality-beyond-the-items-explicitly-requested",
-      "title": "Respect the stated constraints by limiting changes strictly to: (1) removing Compare from the Main Dashboard Finance Trends card and showing only Net Balance, (2) adding mobile-only navigation between Dashboard and Daily View, and (3) mobile-only Daily View tab label abbreviations. Do not alter backend logic or any saved data. Do not change desktop/tablet layout or functionality beyond the items explicitly requested.",
+      "id": "IF-17",
+      "title": "Read-only Daily Overview tab (per-day summary cards)",
+      "synonyms": [
+        "DailyOverviewSection",
+        "daily summary"
+      ],
+      "description": "Provides a read-only overview for the selected date with four cards: activities time distribution pie, finance category pie, habits completion pie, and a journal preview.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-18",
+      "title": "Main Dashboard analytics with 7/30 day timeframe selector and finance net-balance-only trends",
+      "synonyms": [
+        "MainDashboard",
+        "finance trends",
+        "net balance chart"
+      ],
+      "description": "Aggregated dashboard with a rolling timeframe selector (Last 7 days / Last 30 days). Renders Finance Trends as a single Net Balance line chart (Compare option removed), plus finance distribution percentages, income-only/expense-only/investment-only trend charts, habits completion rate trend, and time-spent-by-activity pie aggregation.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "IF-19",
+      "title": "Standardized toasts and error normalization for backend operations",
+      "synonyms": [
+        "sonner toasts",
+        "normalizeError"
+      ],
+      "description": "Mutations show success/error toasts; errors from backend/runtime are normalized into user-friendly messages (not authenticated/unauthorized/anonymous principal cases handled explicitly).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-20",
+      "title": "Reusable AppButton wrapper and dashboard card styling system",
+      "synonyms": [
+        "AppButton",
+        "dashboard-card accents",
+        "section-themed cards"
+      ],
+      "description": "Wraps the base Button to apply consistent interaction styling and uses a shared Tailwind/CSS-variable system for section-themed dashboard cards (overview/finance/habits/journal) including borders, subtle overlays, and hover elevation effects.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-21",
+      "title": "Mobile header layout spacing refinements",
+      "synonyms": [
+        "phone-only top bar spacing",
+        "equal spacing controls",
+        "brand-to-nav gap"
+      ],
+      "description": "On phone-sized screens, adjusts Header top bar spacing so the Dashboard button, Daily View button, and theme toggle are evenly spaced; adds extra gap between the DailyOS brand text and the Dashboard button; keeps the profile icon aligned top-right with no functional behavior changes.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-22",
+      "title": "Mobile-only dashboard chart width improvements",
+      "synonyms": [
+        "stretch charts on mobile",
+        "wider Finance/Habits charts"
+      ],
+      "description": "On mobile, increases usable horizontal space for dashboard charts (notably Finance and Habits) within their cards to improve readability, without changing chart logic or data aggregation.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-23",
+      "title": "Mobile-only Daily View layout reordered with date at top",
+      "synonyms": [
+        "Daily View mobile reorder",
+        "date text top",
+        "Date→Calendar→Reminders→Tabs"
+      ],
+      "description": "On mobile, moves the current date text to the top and reorders the Daily View layout to: Date header → Calendar → Reminders → tabbed sections. Desktop/tablet layout remains unchanged.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-24",
+      "title": "Profile dropdown shows username instead of 'My Account'",
+      "synonyms": [
+        "user menu label",
+        "replace My Account"
+      ],
+      "description": "Updates the profile dropdown trigger/label (desktop and mobile) to display the current user's username in place of the 'My Account' text, keeping dropdown behavior and Logout unchanged.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-mobile-only-pie-chart-label-overflow-so-that-all-pie-chart-content-including-percentage-labels-stays-fully-visible-and-contained-within-the-dashboard-card-boundaries-on-small-screens-without-changing-desktop-layout-and-without-removing-percentages",
+      "title": "Fix mobile-only pie chart label overflow so that all pie chart content (including percentage labels) stays fully visible and contained within the dashboard card boundaries on small screens, without changing desktop layout and without removing percentages.",
       "reqIds": [
         "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-mobile-only-finance-trends-chart-sizing-so-the-line-chart-expands-horizontally-to-use-the-full-available-card-width-improving-readability-of-x-axis-labels-and-the-plotted-line-without-changing-chart-data-logic-and-without-reducing-desktop-card-width-or-affecting-desktop-layout",
+      "title": "Fix mobile-only Finance Trends chart sizing so the line chart expands horizontally to use the full available card width (improving readability of x-axis labels and the plotted line) without changing chart data/logic and without reducing desktop card width or affecting desktop layout.",
+      "reqIds": [
+        "REQ-5"
       ],
       "version": 1
     }
   ],
   "new_feature_requests": [
     {
-      "id": "AR-15",
-      "summary": "Main Dashboard Finance Trends: remove Compare option entirely and show only Net Balance chart (keep Net Balance behavior/appearance unchanged).",
+      "id": "AR-1",
+      "summary": "Mobile-only: pie chart percentage labels overflow/cut off; ensure labels fit within card bounds without affecting desktop",
       "reqIds": [],
       "status": "pending"
     },
     {
-      "id": "AR-16",
-      "summary": "Mobile navigation: add visible/usable buttons on phone-sized screens to switch between Dashboard and Daily View so users can always change views on mobile.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-17",
-      "summary": "Mobile-only Daily View section label abbreviations: Overview→O, Activities→A, Finance→F, Habits→H, Journal→J; no change on tablet/desktop.",
+      "id": "AR-2",
+      "summary": "Mobile-only: Finance Trends chart is horizontally compressed inside its card; stretch to full available width without changing data/logic or desktop layout",
       "reqIds": [],
       "status": "pending"
     }
   ],
   "architectural_notes": [
-    "Frontend is React + TypeScript using @tanstack/react-query for data fetching/caching and mutations with cache invalidation on success.",
-    "Authentication uses DFINITY Internet Identity via @dfinity/auth-client; the app exposes an InternetIdentityProvider context and a login/logout button.",
-    "ICP canister interaction is encapsulated in a custom useActor hook which builds an authenticated actor when an identity exists (otherwise uses an anonymous actor).",
-    "Backend is a Motoko actor canister using mo:core/Map for in-memory storage of entities (activities, finances, habits, journals, reminders, profiles) and incremental counters for IDs.",
-    "Authorization is implemented via an AccessControl module and a MixinAuthorization mixin that is included into the main actor; first eligible caller can become admin using a secret token, others default to user.",
-    "Multi-tenancy model: all primary data records include an author Principal; backend queries filter by caller and enforce author ownership (admin override).",
-    "UI composition follows a sectioned dashboard approach (DailyDashboard tabs for Overview/Finance/Habits/Journal, plus Reminders), with a separate MainDashboard for aggregated analytics.",
-    "Styling uses Tailwind CSS with an OKLCH color token system and next-themes for light/dark theme switching; UI components resemble shadcn/radix patterns (Dialog, Tabs, DropdownMenu).",
-    "Notifications use sonner toasts for common mutation outcomes (create/delete/save).",
-    "A URL/hash secret extraction utility persists sensitive parameters (e.g., admin token) in sessionStorage and clears them from the URL hash to reduce leakage.",
-    "Date handling standardized via a local-date utility to generate/parse YYYY-MM-DD keys in a timezone-safe way, preventing off-by-one day selection/storage bugs.",
-    "Calendar reminder indicators and analytics charts use bulk/range queries instead of issuing separate React Query calls per day in a month/week view.",
-    "Top-right authenticated user control: display the logged-in user's username in a persistent box/menu with a logout option; must persist across sessions and always reflect the active principal/profile.",
-    "Dashboard card styling: overlay/background treatment must fully surround each card (not left-only) and sections should use distinct, varied accent colors per section while remaining subtle/clean; keep hover/pop effects.",
-    "Global button styling: all buttons across the app (not just dashboards) should have consistent, visually prominent styling with hover effects/subtle animations aligned with the dashboard interaction style.",
-    "Authenticated user control (global header): username + logout box must appear top-right on all authenticated pages (Daily View, Main Dashboard, Analytics, Settings), persist across sessions, and always reflect the active principal/profile.",
-    "Username source: use canister-stored UserProfile.username; if profile exists but username missing, prompt once to set then save; after that, use it for all actions.",
-    "UI component system expanded/standardized using shadcn-style primitives (notably shared Button/AppButton) to enforce consistent styling and interactions across the app.",
-    "Global Header component is used to provide the authenticated user control (username + logout) consistently across authenticated pages.",
-    "Dashboard section color mapping for card accents/overlays: Overview=blue, Finance=green, Habits=purple, Journal=neutral (beige/cream/light gray); overlays/borders must fully surround cards with subtle shadow and hover/pop-out effects.",
-    "Dashboard section color mapping for card accents/overlays: Overview=blue, Finance=green, Habits=purple, Journal=neutral (beige/cream/light gray).",
-    "Authenticated user control behavior: top-right header must render the current profile username as the clickable trigger; logout is an option inside the dropdown/menu (not shown alone as the only visible control).",
-    "Dashboard section color mapping update: Journal uses a neutral cream accent applied to the card border/overlay only (no interior fill), while maintaining subtle hover/pop effects.",
-    "UI constraint: implement requested layout/navigation changes without modifying backend logic, authentication, or data handling (positioning/styling only).",
-    "Finance dashboard requirements: Compare mode must render three independent series (Income=green, Expenses=orange/red, Investments=blue/purple) over the same selected rolling range (Last 7/Last 30 days) and must not render empty if data exists; add an Investments-only chart tied to the same range selector and data source; add a finance activity percentage breakdown (Income/Expenses/Investments) computed from the same selected-range source data with exact date alignment (Last 7=today+previous 6; Last 30=today+previous 29). Constraint: do not change layout outside finance section; do not alter auth or other dashboard sections.",
-    "Finance dashboard percentage breakdown calculation: use absolute totals per category (sum Income, sum Expenses, sum Investments) for selected range.",
-    "Finance chart Compare mode requirement clarification: always render all three series together (Income+Expenses+Investments) with no per-series toggles in Compare mode.",
-    "Investments-only chart requirement clarification: match existing Income-only/Expense-only chart behavior and styling (tooltips, hover, axis formatting) for consistency.",
-    "Repository now includes a build-template scaffold (Dockerfile, deploy scripts, ICP yaml/canister yaml, workspace config) and a bundled shadcn-style UI component set used by the frontend for standardized primitives.",
-    "Daily View tab restructuring: rename existing Overview tab to Activities (no logic/UI change besides label) and add a new first tab 'Overview' that is read-only and aggregates same-day data from Activities/Finance/Habits/Journal into four summary cards (Activities time distribution pie; Finance category pie; Habits completion pie; Journal text display). Must reuse existing per-day data sources/queries and avoid duplicating data entry logic; do not remove or break existing sections.",
-    "Constraint for this update: do not modify any other dashboard charts; do not change finance logic/calculations outside fixing Compare rendering; only update Finance Compare rendering and Daily View calendar container styling.",
-    "Main Dashboard Finance Trends Compare mode now plots three series (Income/Expenses/Investments) over the selected rolling range using the same aligned data source as Net Balance; Net Balance behavior remains unchanged.",
-    "Daily View calendar container received styling-only polish (yellow border/glow/overlay) with no changes to calendar logic.",
-    "Main Dashboard Finance Trends UI change: remove the Compare mode option and keep only the existing Net Balance line chart with unchanged data source, calculations, and styling.",
-    "Mobile-only UX: provide dedicated navigation controls (e.g., top bar or fixed nav) to switch between Dashboard and Daily View on phone-sized screens without affecting desktop/tablet layout.",
-    "Responsive labeling rule (mobile only): Daily View tab/section labels abbreviate to single letters (O/A/F/H/J) on phone-sized breakpoints; desktop/tablet labels remain unchanged."
+    "Frontend is React + TypeScript, using shadcn/Radix-style UI primitives and Tailwind CSS with OKLCH design tokens.",
+    "Data fetching/mutations use @tanstack/react-query with per-entity hooks and cache invalidation after mutations.",
+    "Authentication uses DFINITY Internet Identity via @dfinity/auth-client; identity is restored on reload and exposed via a context provider.",
+    "Canister interaction is encapsulated in a useActor hook that creates an anonymous or identity-backed actor and refreshes dependent queries when the actor changes.",
+    "Backend is a Motoko actor canister with in-memory Map-based storage per entity type and incremental counters for IDs.",
+    "Multi-tenant model: records include an author Principal; backend filters queries by caller and enforces ownership (admin override).",
+    "Authorization bootstraps an admin via a secret token (from URL hash/session) matched against CAFFEINE_ADMIN_TOKEN env var; other principals are assigned user role.",
+    "UI is split into Daily View (calendar + reminders sidebar; tabbed sections) and a Main Dashboard (analytics/trends).",
+    "User feedback uses sonner toasts; errors are normalized to user-friendly messages via a shared normalizeError utility.",
+    "Sensitive URL hash secrets are persisted to sessionStorage and removed from the URL to reduce leakage."
   ],
   "known_issues": [
-    "Frontend has two different CSS files shown (frontend/src/index.css and frontend/index.css) with different token sets; this may indicate duplication or configuration confusion depending on bundler setup.",
-    "Finance amount parsing uses parseFloat on user input without explicit NaN guarding; invalid numeric input could produce NaN and lead to runtime issues before submission validation catches it.",
-    "Potential reliability gap: some save actions may not persist consistently; verify all create/save mutations include authenticated principal and succeed after login.",
-    "Large build-template and duplicated UI/token assets may introduce maintenance drift between template and actual frontend; periodically reconcile or document intended source-of-truth."
+    "MainDashboard issues many per-day queries by manually calling up to 31 useGetFinancesByDate/useGetHabitsByDate/useGetActivitiesByDate hooks; for 7-day view it still creates extra queries with empty dates, increasing network load.",
+    "CalendarView calls useGetRemindersByDate for every day cell (including blank cells with dateStr=''), causing heavy query fan-out in month view.",
+    "useGetAllReminderDates is currently a stub that always returns an empty Set and is not used to power calendar reminder indicators.",
+    "DailyOverviewSection renders journal content via dangerouslySetInnerHTML without sanitization, which can enable XSS if journal content contains HTML.",
+    "Finance entry creation uses parseFloat without NaN guarding; invalid input can throw when converted to BigInt.",
+    "Backend storage uses in-memory Maps only; without stable storage, data will be lost on canister upgrade/reinstall.",
+    "Backend initialization traps if CAFFEINE_ADMIN_TOKEN env var is not set; authenticated actor initialization always calls _initializeAccessControlWithSecret and may fail in misconfigured deployments.",
+    "saveCallerUserProfile only updates username, ignoring other fields (email/theme/language) passed from the client, which may surprise callers.",
+    "TimeSpentChart aggregation in MainDashboard uses only activity.duration and ignores startTime/endTime-derived durations, undercounting time for activities logged with times.",
+    "Mobile: pie chart percentage labels overflow/cut off outside card bounds; labels must remain visible and contained within card on mobile only."
   ],
-  "isFixRequest": false,
+  "isFixRequest": true,
   "gameProjectType": "none",
   "projectName": "DailyOS",
   "clarification_mode": "pro",
