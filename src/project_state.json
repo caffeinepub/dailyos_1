@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "DailyOS is a calendar-driven personal tracking web app built on the Internet Computer (ICP). Users authenticate via DFINITY Internet Identity, then manage per-day data including time-based activities (with a 24-hour timeline visualization), finance entries (income/expense/investment stored as cents), daily habits (checklist with completion toggles and progress charts), a single daily journal entry (create/update), and date-specific reminders (with monthly calendar indicators). The frontend uses React + TypeScript with TanStack React Query for typed canister CRUD and multi-date batch queries, Recharts for analytics dashboards (last 7/30 days), and Tailwind/shadcn-ui styling with light/dark theming. The Motoko backend stores user-scoped entities keyed by incremental IDs and enforces principal-based authorization with admin bootstrapping via an environment token plus a user-provided secret.",
+  "summary": "DailyOS is a calendar-driven personal tracking web app built on the Internet Computer (ICP). Users authenticate via DFINITY Internet Identity, then manage per-day data: timed activities (with duration calculation, grouping, and a 24-hour timeline visualization), finance entries (income/expense/investment stored as cents), daily habits (checklist with completion toggles and progress charts), a single daily journal entry (create/update), and date-specific reminders (with monthly calendar indicator dots). The React + TypeScript frontend uses TanStack React Query for typed canister CRUD and multi-date batch queries, Recharts for daily and multi-day analytics dashboards (last 7/30 days), and Tailwind/shadcn-ui styling with next-themes light/dark/system theming. The Motoko backend stores user-scoped entities in Maps keyed by incremental IDs and enforces principal-based authorization with admin bootstrapping using an environment token plus a user-provided secret passed via URL hash.",
   "existing_features": [
     {
       "id": "IF-1",
@@ -11,7 +11,7 @@
         "AuthClient integration",
         "Identity context/provider"
       ],
-      "description": "Provides an InternetIdentityProvider that initializes an AuthClient, restores an authenticated identity on reload, supports login/logout, and exposes identity and login status flags to the app.",
+      "description": "Provides an InternetIdentityProvider that initializes an AuthClient, restores a previously authenticated identity on reload, supports login/logout, and exposes identity plus login status flags to the app.",
       "reqIds": [],
       "version": 1
     },
@@ -23,31 +23,31 @@
         "react-query cache clear on auth",
         "retry login"
       ],
-      "description": "Implements a login UI that triggers Internet Identity authentication and, when a stale authenticated session is detected (already authenticated error), clears the React Query cache and retries login.",
+      "description": "Implements a login UI that triggers Internet Identity authentication and, when a stale authenticated session is detected, clears the React Query cache and retries login.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-3",
-      "title": "ICP canister actor creation (anonymous/authenticated) with auth initialization and query invalidation",
+      "title": "ICP canister actor creation (anonymous/authenticated) with authorization initialization",
       "synonyms": [
         "useActor",
         "createActorWithConfig",
         "authenticated actor refresh"
       ],
-      "description": "Creates an anonymous canister actor when logged out and an identity-backed actor when logged in; on authenticated actor creation, calls the backend access-control initializer with a secret token and invalidates/refetches all non-actor React Query caches when the actor changes.",
+      "description": "Creates an anonymous actor when logged out and an identity-backed actor when logged in; on authenticated actor creation, calls the backend access-control initializer using a secret token, and invalidates/refetches all non-actor React Query caches when the actor changes.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-4",
-      "title": "Secret token extraction from URL hash with session persistence and URL cleanup",
+      "title": "Secure admin secret extraction from URL hash with session persistence and URL cleanup",
       "synonyms": [
         "getSecretParameter",
-        "caffeineAdminToken hash",
+        "hash secret parsing",
         "sessionStorage token persistence"
       ],
-      "description": "Extracts sensitive parameters from the URL hash fragment, persists them in sessionStorage for the session, and removes them from the URL hash to reduce history/referrer leakage.",
+      "description": "Extracts sensitive parameters from the URL hash fragment, persists them in sessionStorage for the session, and removes them from the URL to reduce history/referrer leakage.",
       "reqIds": [],
       "version": 1
     },
@@ -60,7 +60,7 @@
         "role assignment",
         "isCallerAdmin"
       ],
-      "description": "Motoko AccessControl module assigns roles (#admin/#user/#guest) and enforces permission checks; MixinAuthorization exposes initialization using an env token plus user-provided secret, role lookup, admin checks, and admin-only role assignment.",
+      "description": "Motoko access control assigns roles (#admin/#user/#guest) and enforces permission checks; mixin exposes initialization via env token + user secret, role lookup, admin checks, and admin-only role assignment.",
       "reqIds": [],
       "version": 1
     },
@@ -72,19 +72,19 @@
         "getSetupStatus",
         "profile save/get"
       ],
-      "description": "Backend supports fetching and saving the caller profile plus a lightweight setup-status method; frontend provides hooks to fetch profile/setup status and to save the profile, with cache invalidation on success.",
+      "description": "Backend supports fetching and saving the caller profile and a lightweight setup-status method; frontend provides hooks to fetch profile/setup status and save the profile with cache invalidation on success.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-7",
-      "title": "Profile setup modal with first-time setup and username repair mode",
+      "title": "Profile setup gating modal (first-time setup + username repair)",
       "synonyms": [
         "ProfileSetupModal",
         "blocking setup gate",
-        "username repair"
+        "username repair mode"
       ],
-      "description": "Shows a blocking modal when an authenticated user needs initial setup (no profile) or has an empty username; allows setting a username and saving via mutation with toast feedback.",
+      "description": "Shows a blocking modal for authenticated users who need initial profile setup or have an empty username; submits username changes via save-profile mutation with toast feedback.",
       "reqIds": [],
       "version": 1
     },
@@ -97,7 +97,7 @@
         "mutations + invalidation",
         "range queries"
       ],
-      "description": "Implements typed React Query hooks for fetching/mutating activities, finances, habits, journals, reminders, and profile data; includes multi-date range queries returning grouped Maps/Sets and consistent success/error toasts with normalized error messages.",
+      "description": "Implements typed React Query hooks for fetching/mutating activities, finances, habits, journal, reminders, and profile data; includes multi-date range queries returning grouped Maps/Sets and consistent success/error toasts using normalized error messages.",
       "reqIds": [],
       "version": 1
     },
@@ -115,25 +115,25 @@
     },
     {
       "id": "IF-10",
-      "title": "Daily View layout with calendar sidebar, reminders panel, and tabbed daily dashboard",
-      "synonyms": [
-        "Daily View",
-        "calendar-driven UI",
-        "DailyDashboard tabs"
-      ],
-      "description": "Daily View presents a month calendar with date selection, a reminders section for the selected date, and a tabbed dashboard with Overview/Activities/Finance/Habits/Journal sections including responsive date headers.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-11",
       "title": "Monthly calendar with navigation, Today shortcut, and reminder indicators via a single range query",
       "synonyms": [
         "CalendarView",
         "month navigation",
         "reminder dots"
       ],
-      "description": "Interactive calendar supports previous/next month navigation and a Today button; reminder indicator dots are driven by a single per-month range query returning a Set of dates that have reminders.",
+      "description": "Interactive month calendar supports previous/next navigation and a Today button; reminder indicator dots are driven by a single month range query returning a Set of dates with reminders.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-11",
+      "title": "Daily View layout with sticky calendar sidebar and reminders panel",
+      "synonyms": [
+        "Daily view",
+        "calendar-driven UI",
+        "selected date layout"
+      ],
+      "description": "Daily view combines month calendar date selection, reminders for the selected date, and a tabbed daily dashboard; sidebar becomes sticky on large screens.",
       "reqIds": [],
       "version": 1
     },
@@ -150,13 +150,13 @@
     },
     {
       "id": "IF-13",
-      "title": "Time-based activity tracking per date (create/list/delete) with validation and duration calculation",
+      "title": "Timed activity tracking per date (create/list/delete) with duration validation",
       "synonyms": [
         "Activities",
         "time tracking",
         "duration minutes"
       ],
-      "description": "Users can create daily activities with start/end times, client-side validation (both times required; end after start), automatic duration calculation, listing, and deletion.",
+      "description": "Users can create daily timed activities with start/end times, client-side validation (both required; end after start), automatic duration calculation, listing, and deletion; backend enforces author-based access control.",
       "reqIds": [],
       "version": 1
     },
@@ -168,7 +168,7 @@
         "time-of-day sorting",
         "stable activity colors"
       ],
-      "description": "Activities are grouped by identical name while still showing individual entries; groups and entries are ordered by time-of-day descending (later first) and share deterministic OKLCH colors derived from the activity name.",
+      "description": "Activities are grouped by identical name while still showing individual entries; groups and entries are ordered by time-of-day descending and share deterministic OKLCH colors derived from the activity name.",
       "reqIds": [],
       "version": 1
     },
@@ -180,7 +180,7 @@
         "timeline segments",
         "hour markers"
       ],
-      "description": "Renders a 24-hour horizontal timeline with hour markers and positioned activity segments using gradients/glow derived from deterministic colors; shows segment labels when wide enough and supports hover polish.",
+      "description": "Renders a 24-hour horizontal timeline with hour markers and positioned activity segments using gradient/glow styling derived from deterministic activity colors; shows segment labels when wide enough.",
       "reqIds": [],
       "version": 1
     },
@@ -192,7 +192,7 @@
         "income/expense/investment",
         "finance summary"
       ],
-      "description": "Users can add categorized finance entries (income/expense/investment) stored as cents, view daily transactions, see daily totals and a pie breakdown, and delete entries; actions are gated by authentication.",
+      "description": "Users can add categorized finance entries (income/expense/investment) stored as cents, view daily transactions, see totals and a pie breakdown, and delete entries; actions are gated by authentication and backend authorization.",
       "reqIds": [],
       "version": 1
     },
@@ -215,19 +215,19 @@
         "JournalSection",
         "daily notes"
       ],
-      "description": "Loads an existing journal entry for the selected date or creates one on first save; supports updating content and timestamps. Editor/save actions are gated by authentication.",
+      "description": "Loads an existing journal entry for the selected date or creates one on first save; supports updating content and timestamps. Editor and save actions are gated by authentication.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-19",
-      "title": "Daily overview aggregation with Recharts pies and mobile-safe in-slice percent labels",
+      "title": "Daily overview aggregation with charts and journal preview",
       "synonyms": [
         "DailyOverviewSection",
-        "PiePercentLabel",
-        "overview charts"
+        "daily analytics cards",
+        "overview pies"
       ],
-      "description": "Aggregates a selected day’s activities (time by name), finances (totals by type), and habits (completed vs not) into pie charts and shows a journal preview; uses a custom in-slice percent label renderer for mobile readability.",
+      "description": "Aggregates a selected day’s activities (time by name), finances (totals by type), and habits (completed vs not) into pie charts and shows a journal preview.",
       "reqIds": [],
       "version": 1
     },
@@ -239,58 +239,72 @@
         "trend charts",
         "range analytics"
       ],
-      "description": "Provides an analytics dashboard with a 7-day/30-day timeframe selector; uses multi-date batch queries to compute and render finance net trends and breakdowns, income/expense/investment trends, habit completion trends, and time-spent-by-activity summaries.",
+      "description": "Provides a multi-day analytics dashboard with a 7-day/30-day selector; uses batch queries to compute finance trends (net/income/expense/investment), finance distribution, habit completion trends, and time-spent-by-activity summaries.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-21",
-      "title": "Responsive layout helpers and mobile viewport detection",
+      "title": "Responsive helpers and mobile-safe chart labeling",
       "synonyms": [
         "useIsMobile",
+        "PiePercentLabel",
         "responsive charts"
       ],
-      "description": "Includes a viewport hook (<768px) used to adjust chart sizing/margins and label rendering for mobile devices.",
+      "description": "Includes a viewport hook (<768px) used to adjust chart margins/sizing and a custom pie label renderer that positions percentage labels inside slices for mobile readability.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-22",
-      "title": "Token-based design system, theme switching, and consistent UI primitives",
+      "title": "Token-based theming and consistent UI primitives",
       "synonyms": [
         "Tailwind OKLCH tokens",
         "next-themes",
         "AppButton wrapper",
         "shadcn/ui"
       ],
-      "description": "Supports light/dark/system themes via next-themes; uses Tailwind + OKLCH CSS variables for consistent theming; standardizes button styling via AppButton and uses shadcn/ui primitives across dialogs, tabs, dropdowns, etc.",
+      "description": "Supports light/dark/system themes via next-themes; uses Tailwind + OKLCH CSS variables for consistent theming; standardizes buttons via AppButton and composes UI with shadcn/ui primitives (dialogs, tabs, dropdowns, etc.).",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-23",
-      "title": "Playful visual-only UI redesign (typography, palette, spacing, micro-interactions)",
+      "title": "Backend utility endpoints (calendar/week/care) for exploration/diagnostics",
       "synonyms": [
-        "Nunito typography refresh",
-        "playful palette",
-        "hover/active polish",
-        "visual-only redesign"
+        "calendar query",
+        "week query",
+        "care ping"
       ],
-      "description": "Implements a visual-only redesign: global Nunito font and stronger typographic hierarchy, refreshed OKLCH color tokens (including dark mode), and consistent rounded corners/shadows/hover interactions across cards, calendar, buttons, and timeline without changing functional behavior.",
+      "description": "Backend exposes simple read-only endpoints (calendar/week/care) available without user authorization, likely for early scaffolding or diagnostics.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-24",
+      "title": "Footer branding text removed while preserving layout spacing",
+      "synonyms": [
+        "Footer text removal",
+        "branding removal",
+        "layout-preserving footer"
+      ],
+      "description": "Footer retains its container structure and spacing but has no visible branding text content.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-gentle-looping-attention-animation-to-the-login-button-when-the-user-is-not-authenticated-not-logged-in-the-animation-must-subtly-increase-decrease-perceived-brightness-e-g-via-brightness-opacity-glow-in-a-smooth-loop-and-must-not-run-while-the-login-flow-is-in-progress-logging-in-or-after-the-user-is-authenticated",
+      "title": "Add a gentle looping attention animation to the Login button when the user is not authenticated (not logged in). The animation must subtly increase/decrease perceived brightness (e.g., via brightness/opacity/glow) in a smooth loop and must not run while the login flow is in progress (\"Logging in...\") or after the user is authenticated.",
       "reqIds": [
-        "REQ-11",
-        "REQ-12",
-        "REQ-13",
-        "REQ-14",
-        "REQ-15"
+        "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-remove-the-footer-text-2026-built-with-using-caffeine-ai-from-the-selected-footer-element-at-xpath-html-1-body-1-div-1-div-1-footer-1-div-1-div-1-ensuring-the-footer-s-layout-spacing-and-the-rest-of-the-app-s-layout-spacing-and-functionality-remain-unchanged",
-      "title": "Remove the footer text “© 2026. Built with using caffeine.ai” from the selected footer element at XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`, ensuring the footer’s layout/spacing and the rest of the app’s layout, spacing, and functionality remain unchanged.",
+      "id": "feature-add-smooth-entrance-and-exit-animations-to-the-username-setup-modal-profilesetupmodal-when-it-opens-after-login-it-should-fade-slide-in-smoothly-and-when-the-username-is-successfully-confirmed-profile-saved-and-the-modal-closes-due-to-existing-gating-logic-it-should-fade-slide-out-smoothly-without-abrupt-disappearance",
+      "title": "Add smooth entrance and exit animations to the username setup modal (ProfileSetupModal): when it opens after login it should fade/slide in smoothly, and when the username is successfully confirmed (profile saved and the modal closes due to existing gating logic), it should fade/slide out smoothly without abrupt disappearance.",
       "reqIds": [
-        "REQ-16"
+        "REQ-2"
       ],
       "version": 1
     }
@@ -298,34 +312,34 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Remove footer text “© 2026. Built with using caffeine.ai” without affecting layout/spacing/functionality elsewhere",
+      "summary": "Add pre-login attention animation (gentle pulse) on login button and smooth fade/slide animations for username setup modal on open/close",
       "reqIds": [],
       "status": "pending"
     }
   ],
   "architectural_notes": [
-    "Frontend is React + TypeScript using shadcn/ui (Radix primitives) and Tailwind CSS with tokenized OKLCH CSS variables and class-based dark mode.",
-    "Data access is centralized in @tanstack/react-query hooks that wrap canister calls, handle enabled-guards, and invalidate caches after mutations.",
-    "Authentication is encapsulated in an InternetIdentityProvider using @dfinity/auth-client, restoring identities on reload and exposing login/logout state.",
-    "Canister interaction is abstracted by a useActor hook that creates anonymous vs identity-backed actors and re-initializes/invalidate-refetches queries on identity changes.",
-    "Backend authorization uses an AccessControl module mixed into the canister via a Motoko mixin (MixinAuthorization) with role checks and admin bootstrap.",
-    "Backend uses in-memory Map stores with incremental counters for IDs; each record includes author Principal and backend overwrites author/id on create.",
-    "Batch/range query endpoints exist for major entities (activities/finances/habits/journals/reminders) to reduce per-date query fanout; frontend regroups results into Maps/Sets keyed by date.",
-    "Date handling in the UI uses local YYYY-MM-DD utilities to avoid timezone/UTC conversion pitfalls across calendar and dashboards.",
-    "Charts are implemented with Recharts, including a custom pie percent label renderer that places labels inside slices for mobile safety.",
-    "Sensitive secret handling is done via URL-hash extraction with sessionStorage persistence and hash cleanup to reduce token leakage in history/referrers."
+    "Frontend is React + TypeScript using shadcn/ui (Radix primitives) + Tailwind CSS with tokenized OKLCH CSS variables and class-based dark mode via next-themes.",
+    "Data access is centralized in @tanstack/react-query hooks wrapping canister calls with enabled-guards and cache invalidation after mutations; batch/range queries reduce fanout.",
+    "Authentication is encapsulated in an InternetIdentityProvider using @dfinity/auth-client with identity restoration on reload and login/logout state flags.",
+    "Canister interaction is abstracted by a useActor hook that creates anonymous vs identity-backed actors and re-initializes authorization on login, then invalidates/refetches non-actor queries.",
+    "Backend authorization is implemented via an AccessControl module mixed into the canister with a Motoko mixin (MixinAuthorization), including admin bootstrapping and role assignment APIs.",
+    "Backend data model uses in-memory Map stores with incrementing counters; create endpoints overwrite author/id to bind records to the caller principal.",
+    "UI is calendar-first: local YYYY-MM-DD date utilities are used to avoid timezone pitfalls across calendar navigation, daily view, and dashboards.",
+    "Charts/analytics are implemented with Recharts, including custom label rendering for mobile-safe pie percentages.",
+    "Sensitive secret handling uses URL-hash extraction + sessionStorage persistence and hash cleanup to reduce token leakage through history/referrers.",
+    "Consistent UI behavior uses shared AppButton wrapper and toast notifications (sonner) with a shared error normalizer."
   ],
   "known_issues": [
     "Backend persistence is in-memory only (no stable storage), so data can be lost on canister upgrade/reinstall.",
-    "Authenticated actor initialization calls _initializeAccessControlWithSecret and will trap if CAFFEINE_ADMIN_TOKEN env var is not configured, breaking authenticated flows.",
-    "Admin bootstrapping can be “missed”: if the first authenticated call initializes a principal as #user (wrong/empty token), that principal cannot later be upgraded to #admin by re-initializing (initialize is no-op if role already set).",
-    "AccessControl.getUserRole traps for unregistered principals; if initialization is skipped/failed, many endpoints can trap with \"User is not registered\".",
-    "Journal preview in DailyOverviewSection renders user content via dangerouslySetInnerHTML without sanitization (XSS risk).",
-    "Finance creation uses parseFloat(formData.amount) and converts to BigInt without robust NaN/empty validation; invalid input can cause runtime errors.",
-    "DailyTimeline uses window.innerWidth during render (not SSR-safe) and hour-label density may not update on resize unless a re-render occurs.",
-    "Backend range queries filter via dates.findIndex inside per-record filters (O(records × dates)), which may degrade with larger datasets.",
-    "Backend allows multiple journals per (author, date); getJournalByDate returns the first match, which is non-deterministic if duplicates exist.",
-    "Two different CSS theme files exist (frontend/index.css and frontend/src/index.css); only src/index.css is imported by the app, which can cause drift/confusion."
+    "Authenticated actor initialization calls _initializeAccessControlWithSecret and will trap if CAFFEINE_ADMIN_TOKEN env var is not set, breaking authenticated flows.",
+    "Admin bootstrapping can be “missed”: if the first initialization doesn’t match the admin token, the principal is assigned #user and cannot become the first admin later (adminAssigned becomes true only once).",
+    "AccessControl.getUserRole traps for unregistered principals; if initialization is skipped/failed, many endpoints may trap with \"User is not registered\".",
+    "DailyOverviewSection renders journal content via dangerouslySetInnerHTML without sanitization (XSS risk if content contains HTML).",
+    "Finance amount parsing uses parseFloat(formData.amount) and converts to BigInt without robust NaN/empty validation; invalid input can cause runtime errors.",
+    "DailyTimeline reads window.innerWidth during render (not SSR-safe) and hour-label density may not update correctly without re-render on resize.",
+    "Backend range queries use dates.findIndex inside per-record filtering (O(records × dates)), which may degrade with larger datasets.",
+    "Backend allows multiple journals per (author, date); getJournalByDate returns the first match, which can be non-deterministic if duplicates exist.",
+    "Two theme CSS files exist (frontend/index.css and frontend/src/index.css); only src/index.css is imported, which can lead to drift/confusion."
   ],
   "isFixRequest": false,
   "gameProjectType": "none",

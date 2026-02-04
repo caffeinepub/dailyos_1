@@ -61,7 +61,10 @@ export default function ProfileSetupModal({ open, existingProfile }: ProfileSetu
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent 
+        className="sm:max-w-md data-[state=open]:animate-modal-fade-in data-[state=closed]:animate-modal-fade-out" 
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>
             {isRepairMode ? 'Set Your Username' : 'Welcome to DailyOS!'}

@@ -1,34 +1,55 @@
 {
   "kind": "build_request",
-  "title": "Remove footer branding text without affecting layout",
+  "title": "Add pre-login attention pulse to Login button and smooth animations for username setup modal",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-16",
-      "text": "Remove the footer text “© 2026. Built with using caffeine.ai” from the selected footer element at XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`, ensuring the footer’s layout/spacing and the rest of the app’s layout, spacing, and functionality remain unchanged.",
+      "id": "REQ-1",
+      "text": "Add a gentle looping attention animation to the Login button when the user is not authenticated (not logged in). The animation must subtly increase/decrease perceived brightness (e.g., via brightness/opacity/glow) in a smooth loop and must not run while the login flow is in progress (\"Logging in...\") or after the user is authenticated.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-6"
+        ],
+        "quotes": [
+          "On the landing page, if the user is not logged in, make the login button gently pulse or “light up”, increasing and decreasing brightness slightly in a smooth loop.",
+          "Ensure this animation only occurs for users who haven’t logged in."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When identity is not present (unauthenticated), the Login button visibly but subtly pulses/brightens in a smooth loop.",
+        "When loginStatus is \"logging-in\", the attention animation is disabled and the button does not pulse.",
+        "When identity becomes present (authenticated), the Login button is replaced by the authenticated user menu (existing behavior) and no login attention animation is shown anywhere."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add smooth entrance and exit animations to the username setup modal (ProfileSetupModal): when it opens after login it should fade/slide in smoothly, and when the username is successfully confirmed (profile saved and the modal closes due to existing gating logic), it should fade/slide out smoothly without abrupt disappearance.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "Delete the text at the bottom of the app:\n\n© 2026. Built with using caffeine.ai\n\n\nEnsure removing it does not affect layout, spacing, or functionality anywhere else in the app."
+          "After login, the username setup window should appear immediately but with a smooth fade-in/slide-in animation.",
+          "When the user types their username and confirms, the window should disappear immediately but smoothly, maintaining a polished transition."
         ]
       },
       "acceptanceCriteria": [
-        "The text “© 2026. Built with using caffeine.ai” is no longer visible anywhere in the footer.",
-        "No other footer styles change (padding, borders, background, positioning remain consistent).",
-        "No changes occur to the rest of the app’s layout or functionality (no new spacing shifts, no broken links/buttons, no runtime errors)."
+        "When ProfileSetupModal transitions from closed to open (open={true}), the DialogContent animates in with a combined fade + slight slide (direction can be up or down).",
+        "When ProfileSetupModal transitions from open to closed (open={false}), the DialogContent animates out with a combined fade + slight slide, with no abrupt unmount/visual pop.",
+        "No changes to the modal’s functional behavior: it remains non-dismissable via outside click/escape as currently implemented, and continues to open/close based on existing setup gating logic."
       ]
     }
   ],
   "constraints": [
-    "Apply changes only to the user-selected element (XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`) as the source of the removed text.",
-    "Do not modify any files under `frontend/src/components/ui` or other immutable paths listed in SYSTEM_CONTEXT."
+    "Do not edit any files under frontend/src/components/ui (shadcn UI sources are read-only); implement animations via consumer component className usage, Tailwind config, and/or app-level CSS.",
+    "No backend behavior changes are requested; do not add or modify canister APIs for this work."
   ],
   "nonGoals": [
-    "Do not redesign or remove the footer container itself unless required to remove only the specified text.",
-    "Do not introduce new footer content or additional branding."
+    "Do not redesign the overall header, navigation, or profile setup flow beyond adding the requested animations.",
+    "Do not introduce new authentication providers or change Internet Identity logic."
   ],
   "imageRequirements": {
     "required": [],

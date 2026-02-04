@@ -95,11 +95,44 @@ export default {
                 'accordion-up': {
                     from: { height: 'var(--radix-accordion-content-height)' },
                     to: { height: '0' }
+                },
+                'attention-pulse': {
+                    '0%, 100%': { 
+                        filter: 'brightness(1)',
+                        boxShadow: '0 0 0 0 oklch(var(--primary) / 0.4)'
+                    },
+                    '50%': { 
+                        filter: 'brightness(1.15)',
+                        boxShadow: '0 0 12px 2px oklch(var(--primary) / 0.3)'
+                    }
+                },
+                'modal-fade-in': {
+                    from: { 
+                        opacity: '0',
+                        transform: 'translateY(-8px) scale(0.96)'
+                    },
+                    to: { 
+                        opacity: '1',
+                        transform: 'translateY(0) scale(1)'
+                    }
+                },
+                'modal-fade-out': {
+                    from: { 
+                        opacity: '1',
+                        transform: 'translateY(0) scale(1)'
+                    },
+                    to: { 
+                        opacity: '0',
+                        transform: 'translateY(-8px) scale(0.96)'
+                    }
                 }
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
-                'accordion-up': 'accordion-up 0.2s ease-out'
+                'accordion-up': 'accordion-up 0.2s ease-out',
+                'attention-pulse': 'attention-pulse 2.5s ease-in-out infinite',
+                'modal-fade-in': 'modal-fade-in 0.3s ease-out',
+                'modal-fade-out': 'modal-fade-out 0.2s ease-in'
             }
         }
     },

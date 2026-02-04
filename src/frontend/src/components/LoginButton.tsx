@@ -8,6 +8,7 @@ export default function LoginButton() {
   const queryClient = useQueryClient();
 
   const disabled = loginStatus === 'logging-in';
+  const shouldPulse = !disabled;
 
   const handleLogin = async () => {
     try {
@@ -27,6 +28,7 @@ export default function LoginButton() {
       disabled={disabled}
       variant="default"
       size="sm"
+      className={shouldPulse ? 'motion-safe:animate-attention-pulse' : ''}
     >
       {loginStatus === 'logging-in' ? (
         'Logging in...'

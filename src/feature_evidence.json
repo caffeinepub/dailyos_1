@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-the-footer-text-2026-built-with-using-caffeine-ai-from-the-selected-footer-element-at-xpath-html-1-body-1-div-1-div-1-footer-1-div-1-div-1-ensuring-the-footer-s-layout-spacing-and-the-rest-of-the-app-s-layout-spacing-and-functionality-remain-unchanged",
-      "featureTitle": "Remove the footer text “© 2026. Built with using caffeine.ai” from the selected footer element at XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`, ensuring the footer’s layout/spacing and the rest of the app’s layout, spacing, and functionality remain unchanged.",
+      "featureId": "feature-add-a-gentle-looping-attention-animation-to-the-login-button-when-the-user-is-not-authenticated-not-logged-in-the-animation-must-subtly-increase-decrease-perceived-brightness-e-g-via-brightness-opacity-glow-in-a-smooth-loop-and-must-not-run-while-the-login-flow-is-in-progress-logging-in-or-after-the-user-is-authenticated",
+      "featureTitle": "Add a gentle looping attention animation to the Login button when the user is not authenticated (not logged in). The animation must subtly increase/decrease perceived brightness (e.g., via brightness/opacity/glow) in a smooth loop and must not run while the login flow is in progress (\"Logging in...\") or after the user is authenticated.",
       "files": [
-        "frontend/src/components/Footer.tsx"
+        "frontend/src/components/LoginButton.tsx",
+        "frontend/tailwind.config.js"
       ],
       "components": [
         "authorization@4.0.0",
@@ -16,7 +17,26 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-16"
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-smooth-entrance-and-exit-animations-to-the-username-setup-modal-profilesetupmodal-when-it-opens-after-login-it-should-fade-slide-in-smoothly-and-when-the-username-is-successfully-confirmed-profile-saved-and-the-modal-closes-due-to-existing-gating-logic-it-should-fade-slide-out-smoothly-without-abrupt-disappearance",
+      "featureTitle": "Add smooth entrance and exit animations to the username setup modal (ProfileSetupModal): when it opens after login it should fade/slide in smoothly, and when the username is successfully confirmed (profile saved and the modal closes due to existing gating logic), it should fade/slide out smoothly without abrupt disappearance.",
+      "files": [
+        "frontend/src/components/ProfileSetupModal.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
       ],
       "confidence": "high"
     }

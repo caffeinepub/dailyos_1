@@ -1,21 +1,42 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove footer branding text while preserving layout",
+  "title": "Login button attention pulse and ProfileSetupModal enter/exit animations",
   "requirements": [
     {
-      "id": "REQ-16",
-      "summary": "Remove the visible footer branding text from the selected footer element while keeping footer and app layout unchanged.",
+      "id": "REQ-1",
+      "summary": "Add a subtle looping brightness pulse to the Login button only when unauthenticated and not currently logging in.",
       "acceptanceCriteria": [
-        "The text “© 2026. Built with using caffeine.ai” is no longer visible anywhere in the footer.",
-        "No other footer styles change (padding, borders, background, positioning remain consistent).",
-        "No changes occur to the rest of the app’s layout or functionality (no new spacing shifts, no broken links/buttons, no runtime errors)."
+        "When identity is not present (unauthenticated), the Login button visibly but subtly pulses/brightens in a smooth loop.",
+        "When loginStatus is \"logging-in\", the attention animation is disabled and the button does not pulse.",
+        "When identity becomes present (authenticated), the Login button is replaced by the authenticated user menu (existing behavior) and no login attention animation is shown anywhere."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/Footer.tsx",
+          "path": "frontend/tailwind.config.js",
           "operation": "modify",
-          "description": "Update only the content within the selected footer element (the inner div that currently renders the branding text) to ensure “© 2026. Built with using caffeine.ai” is not visible. Preserve the existing footer container structure and spacing by keeping the element in place (e.g., render a non-visible placeholder within the same div so height/spacing remain unchanged) and ensure no interactive/footer behavior elsewhere is impacted."
+          "description": "Add a custom Tailwind keyframes+animation entry for a gentle looping attention pulse (brightness/opacity/glow) that can be applied via a utility class (e.g., used with motion-safe)."
+        },
+        {
+          "path": "frontend/src/components/LoginButton.tsx",
+          "operation": "modify",
+          "description": "Apply the new attention pulse animation class to the Login button only when not disabled (i.e., loginStatus is not \"logging-in\"); ensure it remains inactive during \"Logging in...\". Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Add smooth fade+slide entrance and exit animations to ProfileSetupModal DialogContent without changing modal behavior.",
+      "acceptanceCriteria": [
+        "When ProfileSetupModal transitions from closed to open (open={true}), the DialogContent animates in with a combined fade + slight slide (direction can be up or down).",
+        "When ProfileSetupModal transitions from open to closed (open={false}), the DialogContent animates out with a combined fade + slight slide, with no abrupt unmount/visual pop.",
+        "No changes to the modal’s functional behavior: it remains non-dismissable via outside click/escape as currently implemented, and continues to open/close based on existing setup gating logic."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProfileSetupModal.tsx",
+          "operation": "modify",
+          "description": "Update DialogContent className to use state-based animation utility classes (e.g., data-[state=open]/data-[state=closed]) to fade+slide in on open and fade+slide out on close, keeping existing non-dismissable behavior intact. Verify the component's usage instructions before implementing."
         }
       ]
     }

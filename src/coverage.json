@@ -1,24 +1,37 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-04T20:57:55.938Z",
+  "generatedAt": "2026-02-04T21:11:48.593Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-16",
-        "summary": "Remove the footer text “© 2026. Built with using caffeine.ai” from the selected footer element at XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`, ensuring the footer’s layout/spacing and the rest of the app’s layout, spacing, and functionality remain unchanged.",
+        "id": "REQ-1",
+        "summary": "Add a gentle looping attention animation to the Login button when the user is not authenticated (not logged in). The animation must subtly increase/decrease perceived brightness (e.g., via brightness/opacity/glow) in a smooth loop and must not run while the login flow is in progress (\"Logging in...\") or after the user is authenticated.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/Footer.tsx"
+          "frontend/tailwind.config.js",
+          "frontend/src/components/LoginButton.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/Footer.tsx"
+          "frontend/tailwind.config.js",
+          "frontend/src/components/LoginButton.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add smooth entrance and exit animations to the username setup modal (ProfileSetupModal): when it opens after login it should fade/slide in smoothly, and when the username is successfully confirmed (profile saved and the modal closes due to existing gating logic), it should fade/slide out smoothly without abrupt disappearance.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProfileSetupModal.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProfileSetupModal.tsx"
         ]
       }
     ]
@@ -28,7 +41,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/LoginButton.tsx",
+    "frontend/src/components/ProfileSetupModal.tsx",
+    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
