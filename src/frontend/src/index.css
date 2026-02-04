@@ -4,88 +4,88 @@
 
 @layer base {
     :root {
-        --radius: 0.625rem;
-        --background: 0.98 0 0;
-        --foreground: 0.15 0 0;
+        --radius: 1rem;
+        --background: 0.99 0.01 90;
+        --foreground: 0.20 0.02 280;
         --card: 1 0 0;
-        --card-foreground: 0.15 0 0;
+        --card-foreground: 0.20 0.02 280;
         --popover: 1 0 0;
-        --popover-foreground: 0.15 0 0;
-        --primary: 0.55 0.18 264;
+        --popover-foreground: 0.20 0.02 280;
+        --primary: 0.62 0.22 280;
         --primary-foreground: 0.99 0 0;
-        --secondary: 0.96 0 0;
-        --secondary-foreground: 0.15 0 0;
-        --muted: 0.96 0 0;
-        --muted-foreground: 0.50 0 0;
-        --accent: 0.96 0 0;
-        --accent-foreground: 0.15 0 0;
-        --destructive: 0.58 0.24 27;
+        --secondary: 0.97 0.02 120;
+        --secondary-foreground: 0.20 0.02 280;
+        --muted: 0.96 0.01 90;
+        --muted-foreground: 0.55 0.02 280;
+        --accent: 0.95 0.03 200;
+        --accent-foreground: 0.20 0.02 280;
+        --destructive: 0.62 0.26 25;
         --destructive-foreground: 0.99 0 0;
-        --border: 0.90 0 0;
-        --input: 0.90 0 0;
-        --ring: 0.55 0.18 264;
-        --chart-1: 0.65 0.22 41;
-        --chart-2: 0.60 0.18 264;
-        --chart-3: 0.70 0.19 162;
-        --chart-4: 0.75 0.19 142;
-        --chart-5: 0.68 0.20 304;
+        --border: 0.92 0.02 280;
+        --input: 0.92 0.02 280;
+        --ring: 0.62 0.22 280;
+        --chart-1: 0.68 0.24 35;
+        --chart-2: 0.65 0.22 280;
+        --chart-3: 0.72 0.22 160;
+        --chart-4: 0.76 0.22 140;
+        --chart-5: 0.70 0.24 310;
         --sidebar: 0.99 0 0;
-        --sidebar-foreground: 0.15 0 0;
-        --sidebar-primary: 0.55 0.18 264;
+        --sidebar-foreground: 0.20 0.02 280;
+        --sidebar-primary: 0.62 0.22 280;
         --sidebar-primary-foreground: 0.99 0 0;
-        --sidebar-accent: 0.96 0 0;
-        --sidebar-accent-foreground: 0.15 0 0;
-        --sidebar-border: 0.90 0 0;
-        --sidebar-ring: 0.55 0.18 264;
+        --sidebar-accent: 0.97 0.02 120;
+        --sidebar-accent-foreground: 0.20 0.02 280;
+        --sidebar-border: 0.92 0.02 280;
+        --sidebar-ring: 0.62 0.22 280;
         
-        /* Section colors */
-        --finance-accent: 0.75 0.19 142;
-        --habits-accent: 0.68 0.20 304;
-        --overview-accent: 0.60 0.18 264;
-        --journal-accent: 0.88 0.08 60;
-        --calendar-highlight: 0.85 0.18 85;
+        /* Section colors - playful and expressive */
+        --finance-accent: 0.76 0.22 140;
+        --habits-accent: 0.70 0.24 310;
+        --overview-accent: 0.65 0.22 280;
+        --journal-accent: 0.90 0.12 60;
+        --calendar-highlight: 0.88 0.22 85;
     }
 
     .dark {
-        --background: 0.12 0 0;
-        --foreground: 0.98 0 0;
-        --card: 0.16 0 0;
-        --card-foreground: 0.98 0 0;
-        --popover: 0.18 0 0;
-        --popover-foreground: 0.98 0 0;
-        --primary: 0.65 0.20 264;
-        --primary-foreground: 0.12 0 0;
-        --secondary: 0.22 0 0;
-        --secondary-foreground: 0.98 0 0;
-        --muted: 0.22 0 0;
-        --muted-foreground: 0.65 0 0;
-        --accent: 0.26 0 0;
-        --accent-foreground: 0.98 0 0;
-        --destructive: 0.65 0.22 27;
-        --destructive-foreground: 0.98 0 0;
-        --border: 0.26 0 0;
-        --input: 0.26 0 0;
-        --ring: 0.65 0.20 264;
-        --chart-1: 0.70 0.24 41;
-        --chart-2: 0.65 0.20 264;
-        --chart-3: 0.75 0.21 162;
-        --chart-4: 0.78 0.20 142;
-        --chart-5: 0.72 0.22 304;
-        --sidebar: 0.16 0 0;
-        --sidebar-foreground: 0.98 0 0;
-        --sidebar-primary: 0.65 0.20 264;
-        --sidebar-primary-foreground: 0.98 0 0;
-        --sidebar-accent: 0.22 0 0;
-        --sidebar-accent-foreground: 0.98 0 0;
-        --sidebar-border: 0.26 0 0;
-        --sidebar-ring: 0.65 0.20 264;
+        --background: 0.15 0.02 280;
+        --foreground: 0.98 0.01 90;
+        --card: 0.20 0.02 280;
+        --card-foreground: 0.98 0.01 90;
+        --popover: 0.22 0.02 280;
+        --popover-foreground: 0.98 0.01 90;
+        --primary: 0.70 0.24 280;
+        --primary-foreground: 0.15 0.02 280;
+        --secondary: 0.26 0.02 280;
+        --secondary-foreground: 0.98 0.01 90;
+        --muted: 0.26 0.02 280;
+        --muted-foreground: 0.68 0.02 280;
+        --accent: 0.30 0.03 280;
+        --accent-foreground: 0.98 0.01 90;
+        --destructive: 0.68 0.28 25;
+        --destructive-foreground: 0.98 0.01 90;
+        --border: 0.30 0.02 280;
+        --input: 0.30 0.02 280;
+        --ring: 0.70 0.24 280;
+        --chart-1: 0.72 0.26 35;
+        --chart-2: 0.70 0.24 280;
+        --chart-3: 0.76 0.24 160;
+        --chart-4: 0.80 0.24 140;
+        --chart-5: 0.74 0.26 310;
+        --sidebar: 0.20 0.02 280;
+        --sidebar-foreground: 0.98 0.01 90;
+        --sidebar-primary: 0.70 0.24 280;
+        --sidebar-primary-foreground: 0.98 0.01 90;
+        --sidebar-accent: 0.26 0.02 280;
+        --sidebar-accent-foreground: 0.98 0.01 90;
+        --sidebar-border: 0.30 0.02 280;
+        --sidebar-ring: 0.70 0.24 280;
         
-        /* Section colors - slightly brighter for dark mode */
-        --finance-accent: 0.78 0.20 142;
-        --habits-accent: 0.72 0.22 304;
-        --overview-accent: 0.65 0.20 264;
-        --journal-accent: 0.90 0.10 60;
-        --calendar-highlight: 0.88 0.20 85;
+        /* Section colors - brighter for dark mode */
+        --finance-accent: 0.80 0.24 140;
+        --habits-accent: 0.74 0.26 310;
+        --overview-accent: 0.70 0.24 280;
+        --journal-accent: 0.92 0.14 60;
+        --calendar-highlight: 0.90 0.24 85;
     }
 
     * {
@@ -93,127 +93,164 @@
     }
     body {
         @apply bg-background text-foreground;
+        font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+        letter-spacing: -0.01em;
+    }
+    
+    /* Typography hierarchy */
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-bold;
+        letter-spacing: -0.02em;
+    }
+    
+    h1 {
+        @apply text-4xl font-extrabold;
+    }
+    
+    h2 {
+        @apply text-3xl font-bold;
+    }
+    
+    h3 {
+        @apply text-xl font-bold;
+    }
+    
+    /* Key numbers and metrics */
+    .metric-number {
+        @apply text-3xl font-extrabold;
+        letter-spacing: -0.03em;
+    }
+    
+    /* Supporting text */
+    .supporting-text {
+        @apply text-sm font-normal text-muted-foreground;
     }
 }
 
 @layer components {
-    /* Base dashboard card with full border and overlay */
+    /* Base dashboard card with playful styling */
     .dashboard-card {
         position: relative;
         overflow: hidden;
         border-width: 2px;
-        border-color: oklch(var(--primary) / 0.2);
-        box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        transition: all 0.2s ease-in-out;
+        border-color: oklch(var(--primary) / 0.25);
+        box-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.04), 0 1px 3px 0 rgb(0 0 0 / 0.06);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 1.25rem;
     }
 
     .dashboard-card::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(to bottom right, oklch(var(--primary) / 0.03), transparent);
+        background: linear-gradient(135deg, oklch(var(--primary) / 0.04), transparent 60%);
         pointer-events: none;
     }
 
     .dashboard-card:hover {
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        border-color: oklch(var(--primary) / 0.3);
-        transform: translateY(-0.25rem);
+        box-shadow: 0 12px 24px -4px rgb(0 0 0 / 0.08), 0 4px 8px -2px rgb(0 0 0 / 0.04);
+        border-color: oklch(var(--primary) / 0.4);
+        transform: translateY(-0.125rem) scale(1.005);
     }
 
     .dark .dashboard-card {
-        border-color: oklch(var(--primary) / 0.3);
+        border-color: oklch(var(--primary) / 0.35);
+        box-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.2), 0 1px 3px 0 rgb(0 0 0 / 0.1);
     }
 
     .dark .dashboard-card::before {
-        background: linear-gradient(to bottom right, oklch(var(--primary) / 0.05), transparent);
+        background: linear-gradient(135deg, oklch(var(--primary) / 0.06), transparent 60%);
     }
 
     .dark .dashboard-card:hover {
-        border-color: oklch(var(--primary) / 0.4);
+        border-color: oklch(var(--primary) / 0.5);
+        box-shadow: 0 12px 24px -4px rgb(0 0 0 / 0.3), 0 4px 8px -2px rgb(0 0 0 / 0.15);
     }
 
-    /* Finance section - green */
+    /* Finance section - green with playful energy */
     .dashboard-card-finance {
-        border-color: oklch(var(--finance-accent) / 0.3);
+        border-color: oklch(var(--finance-accent) / 0.35);
     }
 
     .dashboard-card-finance::before {
-        background: linear-gradient(to bottom right, oklch(var(--finance-accent) / 0.04), transparent);
+        background: linear-gradient(135deg, oklch(var(--finance-accent) / 0.06), transparent 60%);
     }
 
     .dashboard-card-finance:hover {
-        border-color: oklch(var(--finance-accent) / 0.5);
-        box-shadow: 0 8px 16px -4px oklch(var(--finance-accent) / 0.15);
+        border-color: oklch(var(--finance-accent) / 0.55);
+        box-shadow: 0 12px 24px -4px oklch(var(--finance-accent) / 0.18), 0 4px 8px -2px oklch(var(--finance-accent) / 0.08);
     }
 
     .dark .dashboard-card-finance {
-        border-color: oklch(var(--finance-accent) / 0.4);
+        border-color: oklch(var(--finance-accent) / 0.45);
     }
 
     .dark .dashboard-card-finance::before {
-        background: linear-gradient(to bottom right, oklch(var(--finance-accent) / 0.06), transparent);
+        background: linear-gradient(135deg, oklch(var(--finance-accent) / 0.08), transparent 60%);
     }
 
     .dark .dashboard-card-finance:hover {
-        border-color: oklch(var(--finance-accent) / 0.6);
+        border-color: oklch(var(--finance-accent) / 0.65);
+        box-shadow: 0 12px 24px -4px oklch(var(--finance-accent) / 0.25), 0 4px 8px -2px oklch(var(--finance-accent) / 0.12);
     }
 
-    /* Habits section - purple */
+    /* Habits section - purple with friendly vibes */
     .dashboard-card-habits {
-        border-color: oklch(var(--habits-accent) / 0.3);
+        border-color: oklch(var(--habits-accent) / 0.35);
     }
 
     .dashboard-card-habits::before {
-        background: linear-gradient(to bottom right, oklch(var(--habits-accent) / 0.04), transparent);
+        background: linear-gradient(135deg, oklch(var(--habits-accent) / 0.06), transparent 60%);
     }
 
     .dashboard-card-habits:hover {
-        border-color: oklch(var(--habits-accent) / 0.5);
-        box-shadow: 0 8px 16px -4px oklch(var(--habits-accent) / 0.15);
+        border-color: oklch(var(--habits-accent) / 0.55);
+        box-shadow: 0 12px 24px -4px oklch(var(--habits-accent) / 0.18), 0 4px 8px -2px oklch(var(--habits-accent) / 0.08);
     }
 
     .dark .dashboard-card-habits {
-        border-color: oklch(var(--habits-accent) / 0.4);
+        border-color: oklch(var(--habits-accent) / 0.45);
     }
 
     .dark .dashboard-card-habits::before {
-        background: linear-gradient(to bottom right, oklch(var(--habits-accent) / 0.06), transparent);
+        background: linear-gradient(135deg, oklch(var(--habits-accent) / 0.08), transparent 60%);
     }
 
     .dark .dashboard-card-habits:hover {
-        border-color: oklch(var(--habits-accent) / 0.6);
+        border-color: oklch(var(--habits-accent) / 0.65);
+        box-shadow: 0 12px 24px -4px oklch(var(--habits-accent) / 0.25), 0 4px 8px -2px oklch(var(--habits-accent) / 0.12);
     }
 
-    /* Overview section - blue */
+    /* Overview section - blue with clarity */
     .dashboard-card-overview {
-        border-color: oklch(var(--overview-accent) / 0.3);
+        border-color: oklch(var(--overview-accent) / 0.35);
     }
 
     .dashboard-card-overview::before {
-        background: linear-gradient(to bottom right, oklch(var(--overview-accent) / 0.04), transparent);
+        background: linear-gradient(135deg, oklch(var(--overview-accent) / 0.06), transparent 60%);
     }
 
     .dashboard-card-overview:hover {
-        border-color: oklch(var(--overview-accent) / 0.5);
-        box-shadow: 0 8px 16px -4px oklch(var(--overview-accent) / 0.15);
+        border-color: oklch(var(--overview-accent) / 0.55);
+        box-shadow: 0 12px 24px -4px oklch(var(--overview-accent) / 0.18), 0 4px 8px -2px oklch(var(--overview-accent) / 0.08);
     }
 
     .dark .dashboard-card-overview {
-        border-color: oklch(var(--overview-accent) / 0.4);
+        border-color: oklch(var(--overview-accent) / 0.45);
     }
 
     .dark .dashboard-card-overview::before {
-        background: linear-gradient(to bottom right, oklch(var(--overview-accent) / 0.06), transparent);
+        background: linear-gradient(135deg, oklch(var(--overview-accent) / 0.08), transparent 60%);
     }
 
     .dark .dashboard-card-overview:hover {
-        border-color: oklch(var(--overview-accent) / 0.6);
+        border-color: oklch(var(--overview-accent) / 0.65);
+        box-shadow: 0 12px 24px -4px oklch(var(--overview-accent) / 0.25), 0 4px 8px -2px oklch(var(--overview-accent) / 0.12);
     }
 
-    /* Journal section - cream border only, no interior overlay */
+    /* Journal section - warm cream border, no interior overlay */
     .dashboard-card-journal {
-        border-color: oklch(var(--journal-accent) / 0.4);
+        border-color: oklch(var(--journal-accent) / 0.45);
     }
 
     .dashboard-card-journal::before {
@@ -221,76 +258,133 @@
     }
 
     .dashboard-card-journal:hover {
-        border-color: oklch(var(--journal-accent) / 0.6);
-        box-shadow: 0 8px 16px -4px oklch(var(--journal-accent) / 0.12);
+        border-color: oklch(var(--journal-accent) / 0.65);
+        box-shadow: 0 12px 24px -4px oklch(var(--journal-accent) / 0.15), 0 4px 8px -2px oklch(var(--journal-accent) / 0.08);
     }
 
     .dark .dashboard-card-journal {
-        border-color: oklch(var(--journal-accent) / 0.5);
+        border-color: oklch(var(--journal-accent) / 0.55);
     }
 
     .dark .dashboard-card-journal:hover {
-        border-color: oklch(var(--journal-accent) / 0.7);
+        border-color: oklch(var(--journal-accent) / 0.75);
+        box-shadow: 0 12px 24px -4px oklch(var(--journal-accent) / 0.22), 0 4px 8px -2px oklch(var(--journal-accent) / 0.12);
     }
 
-    /* Calendar highlight - yellow border and glow */
+    /* Calendar highlight - playful yellow glow */
     .calendar-highlight {
         position: relative;
         border-width: 3px;
-        border-color: oklch(var(--calendar-highlight) / 0.6);
-        box-shadow: 0 0 0 1px oklch(var(--calendar-highlight) / 0.2),
-                    0 0 12px oklch(var(--calendar-highlight) / 0.3),
-                    0 4px 6px -1px rgb(0 0 0 / 0.1);
-        transition: all 0.2s ease-in-out;
+        border-color: oklch(var(--calendar-highlight) / 0.65);
+        box-shadow: 0 0 0 2px oklch(var(--calendar-highlight) / 0.15),
+                    0 0 20px oklch(var(--calendar-highlight) / 0.35),
+                    0 4px 12px -2px rgb(0 0 0 / 0.1);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 1.25rem;
     }
 
     .calendar-highlight::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: linear-gradient(to bottom right, oklch(var(--calendar-highlight) / 0.08), transparent);
+        background: linear-gradient(135deg, oklch(var(--calendar-highlight) / 0.1), transparent 60%);
         pointer-events: none;
         border-radius: inherit;
     }
 
     .calendar-highlight:hover {
         border-color: oklch(var(--calendar-highlight) / 0.8);
-        box-shadow: 0 0 0 1px oklch(var(--calendar-highlight) / 0.3),
-                    0 0 20px oklch(var(--calendar-highlight) / 0.4),
-                    0 10px 15px -3px rgb(0 0 0 / 0.1);
+        box-shadow: 0 0 0 2px oklch(var(--calendar-highlight) / 0.25),
+                    0 0 28px oklch(var(--calendar-highlight) / 0.45),
+                    0 8px 20px -4px rgb(0 0 0 / 0.15);
+        transform: translateY(-0.125rem);
     }
 
     .dark .calendar-highlight {
-        border-color: oklch(var(--calendar-highlight) / 0.7);
-        box-shadow: 0 0 0 1px oklch(var(--calendar-highlight) / 0.3),
-                    0 0 16px oklch(var(--calendar-highlight) / 0.4),
-                    0 4px 6px -1px rgb(0 0 0 / 0.2);
+        border-color: oklch(var(--calendar-highlight) / 0.75);
+        box-shadow: 0 0 0 2px oklch(var(--calendar-highlight) / 0.25),
+                    0 0 24px oklch(var(--calendar-highlight) / 0.45),
+                    0 4px 12px -2px rgb(0 0 0 / 0.3);
     }
 
     .dark .calendar-highlight::before {
-        background: linear-gradient(to bottom right, oklch(var(--calendar-highlight) / 0.12), transparent);
+        background: linear-gradient(135deg, oklch(var(--calendar-highlight) / 0.14), transparent 60%);
     }
 
     .dark .calendar-highlight:hover {
         border-color: oklch(var(--calendar-highlight) / 0.9);
-        box-shadow: 0 0 0 1px oklch(var(--calendar-highlight) / 0.4),
-                    0 0 24px oklch(var(--calendar-highlight) / 0.5),
-                    0 10px 15px -3px rgb(0 0 0 / 0.2);
+        box-shadow: 0 0 0 2px oklch(var(--calendar-highlight) / 0.35),
+                    0 0 32px oklch(var(--calendar-highlight) / 0.55),
+                    0 8px 20px -4px rgb(0 0 0 / 0.4);
     }
 
-    /* Enhanced button styling */
+    /* Enhanced button styling with playful micro-interactions */
     .app-button {
-        @apply transition-all duration-200 ease-in-out;
-        @apply hover:scale-[1.02] active:scale-[0.98];
+        @apply transition-all duration-200 ease-out;
+        @apply hover:scale-[1.03] active:scale-[0.97];
         @apply focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
         @apply disabled:pointer-events-none disabled:opacity-50;
+        border-radius: 0.75rem;
+        font-weight: 600;
     }
 
     .app-button:not(:disabled):hover {
-        @apply shadow-md;
+        @apply shadow-lg;
     }
 
     .app-button:not(:disabled):active {
         @apply shadow-sm;
+    }
+
+    /* Daily Timeline - Modern gradient and animation styling */
+    .daily-timeline__track {
+        border-radius: 1rem;
+    }
+
+    .daily-timeline__segment {
+        border-radius: 0.75rem;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        animation: timeline-segment-enter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Entry animation for new segments */
+    @keyframes timeline-segment-enter {
+        0% {
+            opacity: 0;
+            transform: scale(0.8) translateY(-12px);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    /* Smooth transitions for geometry changes */
+    .daily-timeline__segment {
+        transition-property: left, width, opacity, transform, box-shadow;
+    }
+
+    /* Hover state - playful lift and enhanced glow */
+    .daily-timeline__segment:hover {
+        transform: translateY(-2px) scale(1.03);
+        filter: brightness(1.15);
+        z-index: 10;
+    }
+
+    /* Dark mode adjustments for timeline segments */
+    .dark .daily-timeline__segment {
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35), 0 0 12px rgba(255, 255, 255, 0.12);
+    }
+
+    .dark .daily-timeline__segment:hover {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), 0 0 20px rgba(255, 255, 255, 0.18);
+    }
+
+    /* Ensure smooth text rendering on segments */
+    .daily-timeline__segment span {
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        font-weight: 600;
     }
 }

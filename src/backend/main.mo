@@ -277,6 +277,69 @@ actor {
     updatedProfile;
   };
 
+  // New -- Batch Range Queries
+
+  public query ({ caller }) func getActivitiesForDates(dates : [Text]) : async (Text, [Activity]) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access multi-date entries");
+    };
+    // No need to sort -- frontend in control
+    let activitiesForDates = activities.values().toArray().filter(
+      func(activity) {
+        activity.author == caller and dates.findIndex(func(date) { date == activity.date }) != null;
+      }
+    );
+    ("This is a new feature, the array indicates that it returns all activities for a range of days", activitiesForDates);
+  };
+
+  public query ({ caller }) func getJournalsForDates(dates : [Text]) : async (Text, [Journal]) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access multi-date entries");
+    };
+    let journalsForDates = journals.values().toArray().filter(
+      func(journal) {
+        journal.author == caller and dates.findIndex(func(date) { date == journal.date }) != null;
+      }
+    );
+    ("This is a new feature, the array indicates that it returns all journal entries for a range of days", journalsForDates);
+  };
+
+  public query ({ caller }) func getFinancesForDates(dates : [Text]) : async (Text, [Finance]) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access multi-date entries");
+    };
+    let financesForDates = financeEntries.values().toArray().filter(
+      func(finance) {
+        finance.author == caller and dates.findIndex(func(date) { date == finance.date }) != null;
+      }
+    );
+    ("This is a new feature, the array indicates that it returns all finances for a range of days", financesForDates);
+  };
+
+  public query ({ caller }) func getHabitsForDates(dates : [Text]) : async (Text, [Habit]) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access multi-date entries");
+    };
+    let habitsForDates = habits.values().toArray().filter(
+      func(habit) {
+        habit.author == caller and dates.findIndex(func(date) { date == habit.date }) != null;
+      }
+    );
+    ("This is a new feature, the array indicates that it returns all habits for a range of days", habitsForDates);
+  };
+
+  public query ({ caller }) func getRemindersForDates(dates : [Text]) : async (Text, [Reminder]) {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access multi-date entries");
+    };
+    let remindersForDates = reminders.values().toArray().filter(
+      func(reminder) {
+        reminder.author == caller and dates.findIndex(func(date) { date == reminder.targetDate }) != null;
+      }
+    );
+    ("This is a new feature, the array indicates that it returns all reminders for a range of days", remindersForDates);
+  };
+
   // Activity Management
   public shared ({ caller }) func createActivity(activity : Activity) : async ActivityId {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
@@ -543,4 +606,3 @@ actor {
     true;
   };
 };
-

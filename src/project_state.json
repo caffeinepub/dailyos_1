@@ -1,17 +1,17 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 65,
-  "summary": "DailyOS is a personal daily tracking web app built on the Internet Computer (ICP). Users authenticate with Internet Identity, then create and review per-day records: time-based activities, finance transactions (income/expense/investment), habits (with completion toggles), a daily journal entry, and date-specific reminders. The frontend provides a calendar-driven Daily View with tabbed sections plus a separate Main Dashboard that visualizes recent 7- and 30-day trends via charts. A Motoko canister backend stores user-scoped data keyed by incremental IDs and enforces principal-based access control with admin/user/guest roles.",
+  "projectStateVersion": 3,
+  "summary": "DailyOS is a calendar-driven personal tracking web app built on the Internet Computer (ICP). Users authenticate via DFINITY Internet Identity, then manage per-day data including time-based activities (with a 24-hour timeline visualization), finance entries (income/expense/investment stored as cents), daily habits (checklist with completion toggles and progress charts), a single daily journal entry (create/update), and date-specific reminders (with monthly calendar indicators). The frontend uses React + TypeScript with TanStack React Query for typed canister CRUD and multi-date batch queries, Recharts for analytics dashboards (last 7/30 days), and Tailwind/shadcn-ui styling with light/dark theming. The Motoko backend stores user-scoped entities keyed by incremental IDs and enforces principal-based authorization with admin bootstrapping via an environment token plus a user-provided secret.",
   "existing_features": [
     {
       "id": "IF-1",
-      "title": "Internet Identity authentication provider and session persistence",
+      "title": "Internet Identity authentication provider and session restoration",
       "synonyms": [
         "II login",
         "AuthClient integration",
-        "Identity context"
+        "Identity context/provider"
       ],
-      "description": "Provides an InternetIdentityProvider that creates an AuthClient, restores a stored identity on reload, supports login/logout, and exposes login status flags and the current Identity to the app.",
+      "description": "Provides an InternetIdentityProvider that initializes an AuthClient, restores an authenticated identity on reload, supports login/logout, and exposes identity and login status flags to the app.",
       "reqIds": [],
       "version": 1
     },
@@ -20,289 +20,277 @@
       "title": "Login button with stale-session recovery",
       "synonyms": [
         "LoginButton",
-        "retry login",
-        "react-query cache clear on auth"
+        "react-query cache clear on auth",
+        "retry login"
       ],
-      "description": "Implements a login UI that triggers Internet Identity authentication and, if a stale authenticated session is detected, clears the React Query cache and retries login.",
+      "description": "Implements a login UI that triggers Internet Identity authentication and, when a stale authenticated session is detected (already authenticated error), clears the React Query cache and retries login.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-3",
-      "title": "ICP canister actor creation and access-control initialization",
+      "title": "ICP canister actor creation (anonymous/authenticated) with auth initialization and query invalidation",
       "synonyms": [
         "useActor",
         "createActorWithConfig",
-        "authenticated actor"
+        "authenticated actor refresh"
       ],
-      "description": "Creates an anonymous or identity-backed canister actor and initializes backend access control by calling _initializeAccessControlWithSecret with a secret token sourced from the URL hash/session. Invalidates and refetches non-actor queries when the actor changes.",
+      "description": "Creates an anonymous canister actor when logged out and an identity-backed actor when logged in; on authenticated actor creation, calls the backend access-control initializer with a secret token and invalidates/refetches all non-actor React Query caches when the actor changes.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-4",
-      "title": "Role-based access control with admin bootstrapping",
+      "title": "Secret token extraction from URL hash with session persistence and URL cleanup",
       "synonyms": [
-        "access-control",
-        "MixinAuthorization",
-        "admin token"
+        "getSecretParameter",
+        "caffeineAdminToken hash",
+        "sessionStorage token persistence"
       ],
-      "description": "Motoko access-control module supports #admin/#user/#guest roles. The first eligible principal can become admin by presenting the correct token; admins can assign roles. Backend methods gate actions via hasPermission and ownership checks.",
+      "description": "Extracts sensitive parameters from the URL hash fragment, persists them in sessionStorage for the session, and removes them from the URL hash to reduce history/referrer leakage.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-5",
-      "title": "User profile persistence and forced username setup modal",
+      "title": "Backend access-control system with admin bootstrap and role APIs",
       "synonyms": [
-        "UserProfile",
-        "ProfileSetupModal",
-        "username repair mode"
+        "AccessControl",
+        "MixinAuthorization",
+        "role assignment",
+        "isCallerAdmin"
       ],
-      "description": "Supports fetching and saving the caller’s profile in the canister. The UI forces profile setup when authenticated users have no profile or a blank username, allowing username creation/repair via a modal dialog.",
+      "description": "Motoko AccessControl module assigns roles (#admin/#user/#guest) and enforces permission checks; MixinAuthorization exposes initialization using an env token plus user-provided secret, role lookup, admin checks, and admin-only role assignment.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-6",
-      "title": "URL hash secret extraction with session persistence",
+      "title": "User profile persistence and setup-status API",
       "synonyms": [
-        "urlParams",
-        "getSecretParameter",
-        "sessionStorage secret"
+        "UserProfile CRUD",
+        "getSetupStatus",
+        "profile save/get"
       ],
-      "description": "Extracts sensitive parameters (e.g., caffeineAdminToken) from the URL hash, stores them in sessionStorage for the session, and removes them from the URL hash to reduce history/referrer leakage.",
+      "description": "Backend supports fetching and saving the caller profile plus a lightweight setup-status method; frontend provides hooks to fetch profile/setup status and to save the profile, with cache invalidation on success.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-7",
-      "title": "Timezone-safe local date utilities",
+      "title": "Profile setup modal with first-time setup and username repair mode",
       "synonyms": [
-        "formatLocalDate",
-        "parseLocalDate",
-        "YYYY-MM-DD utilities"
+        "ProfileSetupModal",
+        "blocking setup gate",
+        "username repair"
       ],
-      "description": "Provides helper functions to format/parse local YYYY-MM-DD strings and generate date ranges (e.g., last N days) without UTC conversion/off-by-one issues.",
+      "description": "Shows a blocking modal when an authenticated user needs initial setup (no profile) or has an empty username; allows setting a username and saving via mutation with toast feedback.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-8",
-      "title": "App layout with Daily View and Main Dashboard switching",
+      "title": "Typed React Query hook layer for canister CRUD and batch range queries",
       "synonyms": [
-        "App.tsx view switch",
-        "daily vs main"
+        "useQueries",
+        "query hooks",
+        "mutations + invalidation",
+        "range queries"
       ],
-      "description": "Root app maintains selected date and toggles between Daily View (calendar-driven per-day tracking) and the Main Dashboard (analytics). Includes global footer and toast Toaster.",
+      "description": "Implements typed React Query hooks for fetching/mutating activities, finances, habits, journals, reminders, and profile data; includes multi-date range queries returning grouped Maps/Sets and consistent success/error toasts with normalized error messages.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-9",
-      "title": "Header navigation with theme toggle, user dropdown, and mobile-only view controls",
+      "title": "Local date utilities for timezone-safe calendar operations",
       "synonyms": [
-        "Header",
-        "next-themes",
-        "mobile nav icons"
+        "YYYY-MM-DD local dates",
+        "date range generation",
+        "month helpers"
       ],
-      "description": "Top header shows brand, desktop navigation buttons, and mobile-only icon buttons to switch between Dashboard and Daily View on small screens. Includes theme toggle and authenticated user dropdown with username/loading placeholder and logout.",
-      "reqIds": [
-        "REQ-2"
-      ],
+      "description": "Provides helpers to format/parse local YYYY-MM-DD strings, generate ranges (last N days, month dates), compute month boundaries, and validate date strings without UTC conversion pitfalls.",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-10",
-      "title": "Calendar month view with date selection and Today shortcut",
+      "title": "Daily View layout with calendar sidebar, reminders panel, and tabbed daily dashboard",
       "synonyms": [
-        "CalendarView",
-        "monthly calendar",
-        "selected date"
+        "Daily View",
+        "calendar-driven UI",
+        "DailyDashboard tabs"
       ],
-      "description": "Interactive calendar supports month navigation, selecting a day to update the active date, and a Today button to jump back to the current date. Selected and today states are visually distinguished.",
+      "description": "Daily View presents a month calendar with date selection, a reminders section for the selected date, and a tabbed dashboard with Overview/Activities/Finance/Habits/Journal sections including responsive date headers.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-11",
-      "title": "Reminders for a target date (create/list/delete)",
+      "title": "Monthly calendar with navigation, Today shortcut, and reminder indicators via a single range query",
       "synonyms": [
-        "RemindersSection",
-        "daily reminders"
+        "CalendarView",
+        "month navigation",
+        "reminder dots"
       ],
-      "description": "Allows authenticated users to add reminders (title + optional description) for the selected day, list them, and delete them. Uses dialogs for entry and react-query cache invalidation.",
+      "description": "Interactive calendar supports previous/next month navigation and a Today button; reminder indicator dots are driven by a single per-month range query returning a Set of dates that have reminders.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-12",
-      "title": "Time-based activity tracking per date (create/list/delete)",
+      "title": "Reminders per target date (create/list/delete)",
       "synonyms": [
-        "OverviewSection",
-        "activities",
-        "time tracking"
+        "RemindersSection",
+        "daily reminders CRUD"
       ],
-      "description": "Users can create activities for a selected date with optional start/end times or explicit duration, view the day’s list, see computed duration display, and delete activities. Backend enforces per-caller access and ownership.",
+      "description": "Authenticated users can add reminders (title + optional description) for a selected day, list them, and delete them; reminder date indicators update through query invalidation.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-13",
-      "title": "Finance tracking per date (create/list/delete) with daily summary pie",
+      "title": "Time-based activity tracking per date (create/list/delete) with validation and duration calculation",
       "synonyms": [
-        "FinanceSection",
-        "transactions",
-        "income/expense/investment"
+        "Activities",
+        "time tracking",
+        "duration minutes"
       ],
-      "description": "Users can add finance entries (stored as cents) categorized as income/expense/investment, view daily transactions, see daily totals and a pie chart breakdown, and delete entries. Backend enforces per-caller access.",
+      "description": "Users can create daily activities with start/end times, client-side validation (both times required; end after start), automatic duration calculation, listing, and deletion.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-14",
-      "title": "Habit checklist per date with completion toggle and progress visualization",
+      "title": "Activity grouping, ordering, and deterministic coloring by activity name",
       "synonyms": [
-        "HabitsSection",
-        "toggle completion",
-        "completion rate"
+        "group by name",
+        "time-of-day sorting",
+        "stable activity colors"
       ],
-      "description": "Users can add habits for a day, toggle completion (update), delete habits, and view completion rate plus a pie chart of completed vs not completed.",
+      "description": "Activities are grouped by identical name while still showing individual entries; groups and entries are ordered by time-of-day descending (later first) and share deterministic OKLCH colors derived from the activity name.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-15",
-      "title": "Daily journal entry per date (create/read/update) with save button gating",
+      "title": "24-hour daily timeline visualization for timed activities",
       "synonyms": [
-        "JournalSection",
-        "daily notes"
+        "DailyTimeline",
+        "timeline segments",
+        "hour markers"
       ],
-      "description": "Loads an existing journal entry for the selected date or creates one on first save; supports updating content and timestamps. Editor is disabled when not authenticated.",
+      "description": "Renders a 24-hour horizontal timeline with hour markers and positioned activity segments using gradients/glow derived from deterministic colors; shows segment labels when wide enough and supports hover polish.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-16",
-      "title": "Daily View tabbed sections with mobile-only abbreviated labels",
+      "title": "Finance tracking per date (create/list/delete) with daily totals and pie chart",
       "synonyms": [
-        "DailyDashboard tabs",
-        "O/A/F/H/J labels",
-        "responsive tab labels"
+        "transactions",
+        "income/expense/investment",
+        "finance summary"
       ],
-      "description": "Daily View uses five tabs (Overview, Activities, Finance, Habits, Journal). On phone-sized screens, tab labels abbreviate to O/A/F/H/J while tablet/desktop retains full labels.",
-      "reqIds": [
-        "REQ-3"
-      ],
+      "description": "Users can add categorized finance entries (income/expense/investment) stored as cents, view daily transactions, see daily totals and a pie breakdown, and delete entries; actions are gated by authentication.",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-17",
-      "title": "Read-only Daily Overview tab (per-day summary cards)",
+      "title": "Habit checklist per date with completion toggle, deletion, and progress visualization",
       "synonyms": [
-        "DailyOverviewSection",
-        "daily summary"
+        "HabitsSection",
+        "toggle completion",
+        "completion rate"
       ],
-      "description": "Provides a read-only overview for the selected date with four cards: activities time distribution pie, finance category pie, habits completion pie, and a journal preview.",
+      "description": "Users can create habits for a day, toggle completion (update), delete habits, and view a completion-rate summary and completed vs not-completed pie chart.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-18",
-      "title": "Main Dashboard analytics with 7/30 day timeframe selector and finance net-balance-only trends",
+      "title": "Daily journal entry per date (read/create/update) with authenticated editing",
       "synonyms": [
-        "MainDashboard",
-        "finance trends",
-        "net balance chart"
+        "JournalSection",
+        "daily notes"
       ],
-      "description": "Aggregated dashboard with a rolling timeframe selector (Last 7 days / Last 30 days). Renders Finance Trends as a single Net Balance line chart (Compare option removed), plus finance distribution percentages, income-only/expense-only/investment-only trend charts, habits completion rate trend, and time-spent-by-activity pie aggregation.",
-      "reqIds": [
-        "REQ-1"
-      ],
+      "description": "Loads an existing journal entry for the selected date or creates one on first save; supports updating content and timestamps. Editor/save actions are gated by authentication.",
+      "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-19",
-      "title": "Standardized toasts and error normalization for backend operations",
+      "title": "Daily overview aggregation with Recharts pies and mobile-safe in-slice percent labels",
       "synonyms": [
-        "sonner toasts",
-        "normalizeError"
+        "DailyOverviewSection",
+        "PiePercentLabel",
+        "overview charts"
       ],
-      "description": "Mutations show success/error toasts; errors from backend/runtime are normalized into user-friendly messages (not authenticated/unauthorized/anonymous principal cases handled explicitly).",
+      "description": "Aggregates a selected day’s activities (time by name), finances (totals by type), and habits (completed vs not) into pie charts and shows a journal preview; uses a custom in-slice percent label renderer for mobile readability.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-20",
-      "title": "Reusable AppButton wrapper and dashboard card styling system",
+      "title": "Main dashboard analytics for last 7/30 days using batch queries",
       "synonyms": [
-        "AppButton",
-        "dashboard-card accents",
-        "section-themed cards"
+        "MainDashboard",
+        "trend charts",
+        "range analytics"
       ],
-      "description": "Wraps the base Button to apply consistent interaction styling and uses a shared Tailwind/CSS-variable system for section-themed dashboard cards (overview/finance/habits/journal) including borders, subtle overlays, and hover elevation effects.",
+      "description": "Provides an analytics dashboard with a 7-day/30-day timeframe selector; uses multi-date batch queries to compute and render finance net trends and breakdowns, income/expense/investment trends, habit completion trends, and time-spent-by-activity summaries.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-21",
-      "title": "Mobile header layout spacing refinements",
+      "title": "Responsive layout helpers and mobile viewport detection",
       "synonyms": [
-        "phone-only top bar spacing",
-        "equal spacing controls",
-        "brand-to-nav gap"
+        "useIsMobile",
+        "responsive charts"
       ],
-      "description": "On phone-sized screens, adjusts Header top bar spacing so the Dashboard button, Daily View button, and theme toggle are evenly spaced; adds extra gap between the DailyOS brand text and the Dashboard button; keeps the profile icon aligned top-right with no functional behavior changes.",
+      "description": "Includes a viewport hook (<768px) used to adjust chart sizing/margins and label rendering for mobile devices.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-22",
-      "title": "Mobile-only dashboard chart width improvements",
+      "title": "Token-based design system, theme switching, and consistent UI primitives",
       "synonyms": [
-        "stretch charts on mobile",
-        "wider Finance/Habits charts"
+        "Tailwind OKLCH tokens",
+        "next-themes",
+        "AppButton wrapper",
+        "shadcn/ui"
       ],
-      "description": "On mobile, increases usable horizontal space for dashboard charts (notably Finance and Habits) within their cards to improve readability, without changing chart logic or data aggregation.",
+      "description": "Supports light/dark/system themes via next-themes; uses Tailwind + OKLCH CSS variables for consistent theming; standardizes button styling via AppButton and uses shadcn/ui primitives across dialogs, tabs, dropdowns, etc.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-23",
-      "title": "Mobile-only Daily View layout reordered with date at top",
+      "title": "Playful visual-only UI redesign (typography, palette, spacing, micro-interactions)",
       "synonyms": [
-        "Daily View mobile reorder",
-        "date text top",
-        "Date→Calendar→Reminders→Tabs"
+        "Nunito typography refresh",
+        "playful palette",
+        "hover/active polish",
+        "visual-only redesign"
       ],
-      "description": "On mobile, moves the current date text to the top and reorders the Daily View layout to: Date header → Calendar → Reminders → tabbed sections. Desktop/tablet layout remains unchanged.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-24",
-      "title": "Profile dropdown shows username instead of 'My Account'",
-      "synonyms": [
-        "user menu label",
-        "replace My Account"
-      ],
-      "description": "Updates the profile dropdown trigger/label (desktop and mobile) to display the current user's username in place of the 'My Account' text, keeping dropdown behavior and Logout unchanged.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-mobile-only-pie-chart-label-overflow-so-that-all-pie-chart-content-including-percentage-labels-stays-fully-visible-and-contained-within-the-dashboard-card-boundaries-on-small-screens-without-changing-desktop-layout-and-without-removing-percentages",
-      "title": "Fix mobile-only pie chart label overflow so that all pie chart content (including percentage labels) stays fully visible and contained within the dashboard card boundaries on small screens, without changing desktop layout and without removing percentages.",
+      "description": "Implements a visual-only redesign: global Nunito font and stronger typographic hierarchy, refreshed OKLCH color tokens (including dark mode), and consistent rounded corners/shadows/hover interactions across cards, calendar, buttons, and timeline without changing functional behavior.",
       "reqIds": [
-        "REQ-4"
+        "REQ-11",
+        "REQ-12",
+        "REQ-13",
+        "REQ-14",
+        "REQ-15"
       ],
       "version": 1
     },
     {
-      "id": "feature-fix-mobile-only-finance-trends-chart-sizing-so-the-line-chart-expands-horizontally-to-use-the-full-available-card-width-improving-readability-of-x-axis-labels-and-the-plotted-line-without-changing-chart-data-logic-and-without-reducing-desktop-card-width-or-affecting-desktop-layout",
-      "title": "Fix mobile-only Finance Trends chart sizing so the line chart expands horizontally to use the full available card width (improving readability of x-axis labels and the plotted line) without changing chart data/logic and without reducing desktop card width or affecting desktop layout.",
+      "id": "feature-remove-the-footer-text-2026-built-with-using-caffeine-ai-from-the-selected-footer-element-at-xpath-html-1-body-1-div-1-div-1-footer-1-div-1-div-1-ensuring-the-footer-s-layout-spacing-and-the-rest-of-the-app-s-layout-spacing-and-functionality-remain-unchanged",
+      "title": "Remove the footer text “© 2026. Built with using caffeine.ai” from the selected footer element at XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`, ensuring the footer’s layout/spacing and the rest of the app’s layout, spacing, and functionality remain unchanged.",
       "reqIds": [
-        "REQ-5"
+        "REQ-16"
       ],
       "version": 1
     }
@@ -310,44 +298,38 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Mobile-only: pie chart percentage labels overflow/cut off; ensure labels fit within card bounds without affecting desktop",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Mobile-only: Finance Trends chart is horizontally compressed inside its card; stretch to full available width without changing data/logic or desktop layout",
+      "summary": "Remove footer text “© 2026. Built with using caffeine.ai” without affecting layout/spacing/functionality elsewhere",
       "reqIds": [],
       "status": "pending"
     }
   ],
   "architectural_notes": [
-    "Frontend is React + TypeScript, using shadcn/Radix-style UI primitives and Tailwind CSS with OKLCH design tokens.",
-    "Data fetching/mutations use @tanstack/react-query with per-entity hooks and cache invalidation after mutations.",
-    "Authentication uses DFINITY Internet Identity via @dfinity/auth-client; identity is restored on reload and exposed via a context provider.",
-    "Canister interaction is encapsulated in a useActor hook that creates an anonymous or identity-backed actor and refreshes dependent queries when the actor changes.",
-    "Backend is a Motoko actor canister with in-memory Map-based storage per entity type and incremental counters for IDs.",
-    "Multi-tenant model: records include an author Principal; backend filters queries by caller and enforces ownership (admin override).",
-    "Authorization bootstraps an admin via a secret token (from URL hash/session) matched against CAFFEINE_ADMIN_TOKEN env var; other principals are assigned user role.",
-    "UI is split into Daily View (calendar + reminders sidebar; tabbed sections) and a Main Dashboard (analytics/trends).",
-    "User feedback uses sonner toasts; errors are normalized to user-friendly messages via a shared normalizeError utility.",
-    "Sensitive URL hash secrets are persisted to sessionStorage and removed from the URL to reduce leakage."
+    "Frontend is React + TypeScript using shadcn/ui (Radix primitives) and Tailwind CSS with tokenized OKLCH CSS variables and class-based dark mode.",
+    "Data access is centralized in @tanstack/react-query hooks that wrap canister calls, handle enabled-guards, and invalidate caches after mutations.",
+    "Authentication is encapsulated in an InternetIdentityProvider using @dfinity/auth-client, restoring identities on reload and exposing login/logout state.",
+    "Canister interaction is abstracted by a useActor hook that creates anonymous vs identity-backed actors and re-initializes/invalidate-refetches queries on identity changes.",
+    "Backend authorization uses an AccessControl module mixed into the canister via a Motoko mixin (MixinAuthorization) with role checks and admin bootstrap.",
+    "Backend uses in-memory Map stores with incremental counters for IDs; each record includes author Principal and backend overwrites author/id on create.",
+    "Batch/range query endpoints exist for major entities (activities/finances/habits/journals/reminders) to reduce per-date query fanout; frontend regroups results into Maps/Sets keyed by date.",
+    "Date handling in the UI uses local YYYY-MM-DD utilities to avoid timezone/UTC conversion pitfalls across calendar and dashboards.",
+    "Charts are implemented with Recharts, including a custom pie percent label renderer that places labels inside slices for mobile safety.",
+    "Sensitive secret handling is done via URL-hash extraction with sessionStorage persistence and hash cleanup to reduce token leakage in history/referrers."
   ],
   "known_issues": [
-    "MainDashboard issues many per-day queries by manually calling up to 31 useGetFinancesByDate/useGetHabitsByDate/useGetActivitiesByDate hooks; for 7-day view it still creates extra queries with empty dates, increasing network load.",
-    "CalendarView calls useGetRemindersByDate for every day cell (including blank cells with dateStr=''), causing heavy query fan-out in month view.",
-    "useGetAllReminderDates is currently a stub that always returns an empty Set and is not used to power calendar reminder indicators.",
-    "DailyOverviewSection renders journal content via dangerouslySetInnerHTML without sanitization, which can enable XSS if journal content contains HTML.",
-    "Finance entry creation uses parseFloat without NaN guarding; invalid input can throw when converted to BigInt.",
-    "Backend storage uses in-memory Maps only; without stable storage, data will be lost on canister upgrade/reinstall.",
-    "Backend initialization traps if CAFFEINE_ADMIN_TOKEN env var is not set; authenticated actor initialization always calls _initializeAccessControlWithSecret and may fail in misconfigured deployments.",
-    "saveCallerUserProfile only updates username, ignoring other fields (email/theme/language) passed from the client, which may surprise callers.",
-    "TimeSpentChart aggregation in MainDashboard uses only activity.duration and ignores startTime/endTime-derived durations, undercounting time for activities logged with times.",
-    "Mobile: pie chart percentage labels overflow/cut off outside card bounds; labels must remain visible and contained within card on mobile only."
+    "Backend persistence is in-memory only (no stable storage), so data can be lost on canister upgrade/reinstall.",
+    "Authenticated actor initialization calls _initializeAccessControlWithSecret and will trap if CAFFEINE_ADMIN_TOKEN env var is not configured, breaking authenticated flows.",
+    "Admin bootstrapping can be “missed”: if the first authenticated call initializes a principal as #user (wrong/empty token), that principal cannot later be upgraded to #admin by re-initializing (initialize is no-op if role already set).",
+    "AccessControl.getUserRole traps for unregistered principals; if initialization is skipped/failed, many endpoints can trap with \"User is not registered\".",
+    "Journal preview in DailyOverviewSection renders user content via dangerouslySetInnerHTML without sanitization (XSS risk).",
+    "Finance creation uses parseFloat(formData.amount) and converts to BigInt without robust NaN/empty validation; invalid input can cause runtime errors.",
+    "DailyTimeline uses window.innerWidth during render (not SSR-safe) and hour-label density may not update on resize unless a re-render occurs.",
+    "Backend range queries filter via dates.findIndex inside per-record filters (O(records × dates)), which may degrade with larger datasets.",
+    "Backend allows multiple journals per (author, date); getJournalByDate returns the first match, which is non-deterministic if duplicates exist.",
+    "Two different CSS theme files exist (frontend/index.css and frontend/src/index.css); only src/index.css is imported by the app, which can cause drift/confusion."
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "gameProjectType": "none",
   "projectName": "DailyOS",
-  "clarification_mode": "pro",
+  "clarification_mode": "instant",
   "clarification_rounds": 0
 }

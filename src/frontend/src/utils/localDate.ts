@@ -94,3 +94,32 @@ export function getFirstDayOfMonth(dateStr: string): Date {
   const date = parseLocalDate(dateStr);
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
+
+/**
+ * Gets all dates in a given month as YYYY-MM-DD strings
+ */
+export function getMonthDates(year: number, month: number): string[] {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const daysInMonth = lastDay.getDate();
+  
+  const dates: string[] = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    dates.push(formatLocalDate(date));
+  }
+  
+  return dates;
+}
+
+/**
+ * Validates if a string is a valid YYYY-MM-DD date format
+ */
+export function isValidDateString(dateStr: string): boolean {
+  if (!dateStr || typeof dateStr !== 'string') return false;
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(dateStr)) return false;
+  
+  const date = parseLocalDate(dateStr);
+  return !isNaN(date.getTime());
+}

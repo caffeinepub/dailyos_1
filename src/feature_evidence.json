@@ -2,12 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-mobile-only-pie-chart-label-overflow-so-that-all-pie-chart-content-including-percentage-labels-stays-fully-visible-and-contained-within-the-dashboard-card-boundaries-on-small-screens-without-changing-desktop-layout-and-without-removing-percentages",
-      "featureTitle": "Fix mobile-only pie chart label overflow so that all pie chart content (including percentage labels) stays fully visible and contained within the dashboard card boundaries on small screens, without changing desktop layout and without removing percentages.",
+      "featureId": "feature-remove-the-footer-text-2026-built-with-using-caffeine-ai-from-the-selected-footer-element-at-xpath-html-1-body-1-div-1-div-1-footer-1-div-1-div-1-ensuring-the-footer-s-layout-spacing-and-the-rest-of-the-app-s-layout-spacing-and-functionality-remain-unchanged",
+      "featureTitle": "Remove the footer text “© 2026. Built with using caffeine.ai” from the selected footer element at XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`, ensuring the footer’s layout/spacing and the rest of the app’s layout, spacing, and functionality remain unchanged.",
       "files": [
-        "frontend/src/components/charts/PiePercentLabel.tsx",
-        "frontend/src/components/sections/DailyOverviewSection.tsx",
-        "frontend/src/hooks/useIsMobile.ts"
+        "frontend/src/components/Footer.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -18,26 +16,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-fix-mobile-only-finance-trends-chart-sizing-so-the-line-chart-expands-horizontally-to-use-the-full-available-card-width-improving-readability-of-x-axis-labels-and-the-plotted-line-without-changing-chart-data-logic-and-without-reducing-desktop-card-width-or-affecting-desktop-layout",
-      "featureTitle": "Fix mobile-only Finance Trends chart sizing so the line chart expands horizontally to use the full available card width (improving readability of x-axis labels and the plotted line) without changing chart data/logic and without reducing desktop card width or affecting desktop layout.",
-      "files": [
-        "frontend/src/components/MainDashboard.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
+        "REQ-16"
       ],
       "confidence": "high"
     }

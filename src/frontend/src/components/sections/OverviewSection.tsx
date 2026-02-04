@@ -8,9 +8,19 @@ import { Label } from '../ui/label';
 import { useGetActivitiesByDate, useCreateActivity, useDeleteActivity } from '../../hooks/useQueries';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { toast } from 'sonner';
+import DailyTimeline from '../activities/DailyTimeline';
+import type { Activity } from '../../backend';
+import { compareActivitiesByTimeDesc } from '../../utils/activityTime';
+import { getActivityColorByName } from '../../utils/activityColors';
 
 interface OverviewSectionProps {
   selectedDate: string;
+}
+
+interface ActivityGroup {
+  name: string;
+  activities: Activity[];
+  color: string;
 }
 
 export default function OverviewSection({ selectedDate }: OverviewSectionProps) {
@@ -24,7 +34,6 @@ export default function OverviewSection({ selectedDate }: OverviewSectionProps) 
     description: '',
     startTime: '',
     endTime: '',
-    duration: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,13 +44,30 @@ export default function OverviewSection({ selectedDate }: OverviewSectionProps) 
       return;
     }
 
+    // Validate that both start and end times are provided
+    if (!formData.startTime || !formData.endTime) {
+      toast.error('Please provide both start and end times.');
+      return;
+    }
+
+    // Calculate duration in minutes
+    const start = new Date(`2000-01-01T${formData.startTime}`);
+    const end = new Date(`2000-01-01T${formData.endTime}`);
+    const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+
+    // Validate that end time is after start time
+    if (durationMinutes <= 0) {
+      toast.error('End time must be after start time.');
+      return;
+    }
+
     const activity = {
       name: formData.name,
       description: formData.description,
       date: selectedDate,
-      startTime: formData.startTime || undefined,
-      endTime: formData.endTime || undefined,
-      duration: formData.duration ? BigInt(parseInt(formData.duration)) : undefined,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      duration: BigInt(Math.round(durationMinutes)),
       goalType: { __kind__: 'daily' as const, daily: null },
       recurring: false,
       createdAt: BigInt(Date.now()),
@@ -53,7 +79,7 @@ export default function OverviewSection({ selectedDate }: OverviewSectionProps) 
     createActivity(activity, {
       onSuccess: () => {
         setOpen(false);
-        setFormData({ name: '', description: '', startTime: '', endTime: '', duration: '' });
+        setFormData({ name: '', description: '', startTime: '', endTime: '' });
       },
     });
   };
@@ -80,9 +106,44 @@ export default function OverviewSection({ selectedDate }: OverviewSectionProps) 
     return 'N/A';
   };
 
+  // Group activities by name and sort by time-of-day
+  const groupedActivities: ActivityGroup[] = (() => {
+    // Filter only time-based activities
+    const timeBasedActivities = activities.filter(
+      (activity) => activity.startTime && activity.endTime
+    );
+
+    // Group by name
+    const groupMap = new Map<string, Activity[]>();
+    timeBasedActivities.forEach((activity) => {
+      const existing = groupMap.get(activity.name) || [];
+      existing.push(activity);
+      groupMap.set(activity.name, existing);
+    });
+
+    // Convert to array and sort each group's activities by time-of-day (descending)
+    const groups: ActivityGroup[] = Array.from(groupMap.entries()).map(([name, acts]) => ({
+      name,
+      activities: [...acts].sort(compareActivitiesByTimeDesc),
+      color: getActivityColorByName(name),
+    }));
+
+    // Sort groups by their latest (first after time-desc sort) activity time
+    groups.sort((a, b) => {
+      const aLatest = a.activities[0];
+      const bLatest = b.activities[0];
+      return compareActivitiesByTimeDesc(aLatest, bLatest);
+    });
+
+    return groups;
+  })();
+
   return (
     <Card className="dashboard-card dashboard-card-overview">
       <CardHeader>
+        {/* Daily Timeline - positioned above the title and Add Activity button */}
+        {!isLoading && <DailyTimeline activities={activities} />}
+        
         <div className="flex items-center justify-between">
           <CardTitle>Time-Based Activities</CardTitle>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -122,6 +183,7 @@ export default function OverviewSection({ selectedDate }: OverviewSectionProps) 
                       type="time"
                       value={formData.startTime}
                       onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -131,18 +193,9 @@ export default function OverviewSection({ selectedDate }: OverviewSectionProps) 
                       type="time"
                       value={formData.endTime}
                       onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                      required
                     />
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="duration">Or Duration (minutes)</Label>
-                  <Input
-                    id="duration"
-                    type="number"
-                    value={formData.duration}
-                    onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                    placeholder="e.g., 60"
-                  />
                 </div>
                 <AppButton type="submit" className="w-full" disabled={isCreating}>
                   {isCreating ? 'Adding...' : 'Add Activity'}
@@ -155,43 +208,61 @@ export default function OverviewSection({ selectedDate }: OverviewSectionProps) 
       <CardContent>
         {isLoading ? (
           <p className="text-muted-foreground text-center py-8">Loading activities...</p>
-        ) : activities.length === 0 ? (
+        ) : groupedActivities.length === 0 ? (
           <p className="text-muted-foreground text-center py-8">No activities logged for this day</p>
         ) : (
-          <div className="space-y-3">
-            {activities.map((activity) => (
-              <div
-                key={Number(activity.activityId)}
-                className="flex items-start justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-              >
-                <div className="flex-1">
-                  <h4 className="font-medium">{activity.name}</h4>
-                  {activity.description && (
-                    <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
-                  )}
-                  <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {activity.startTime && activity.endTime
-                        ? `${activity.startTime} - ${activity.endTime}`
-                        : activity.duration
-                        ? `${Number(activity.duration)} min`
-                        : 'No time set'}
-                    </div>
-                    <div className="font-medium">
-                      {calculateDuration(activity.startTime, activity.endTime, activity.duration)}
-                    </div>
-                  </div>
+          <div className="space-y-4">
+            {groupedActivities.map((group) => (
+              <div key={group.name} className="space-y-2">
+                {/* Group header with color indicator */}
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: group.color }}
+                  />
+                  <h4 className="font-semibold text-sm">{group.name}</h4>
+                  <span className="text-xs text-muted-foreground">
+                    ({group.activities.length} {group.activities.length === 1 ? 'entry' : 'entries'})
+                  </span>
                 </div>
-                {identity && (
-                  <AppButton
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDelete(activity.activityId)}
-                  >
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                  </AppButton>
-                )}
+                
+                {/* Individual time range entries */}
+                <div className="space-y-2 pl-5">
+                  {group.activities.map((activity) => (
+                    <div
+                      key={Number(activity.activityId)}
+                      className="flex items-start justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                    >
+                      <div className="flex-1">
+                        {activity.description && (
+                          <p className="text-sm text-muted-foreground">{activity.description}</p>
+                        )}
+                        <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {activity.startTime && activity.endTime
+                              ? `${activity.startTime} - ${activity.endTime}`
+                              : activity.duration
+                              ? `${Number(activity.duration)} min`
+                              : 'No time set'}
+                          </div>
+                          <div className="font-medium">
+                            {calculateDuration(activity.startTime, activity.endTime, activity.duration)}
+                          </div>
+                        </div>
+                      </div>
+                      {identity && (
+                        <AppButton
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(activity.activityId)}
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </AppButton>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

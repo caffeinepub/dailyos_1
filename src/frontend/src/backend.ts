@@ -287,13 +287,18 @@ export interface backendInterface {
     deleteJournal(journalId: JournalId): Promise<void>;
     deleteReminder(reminderId: ReminderId): Promise<void>;
     getActivitiesByDate(date: string): Promise<Array<Activity>>;
+    getActivitiesForDates(dates: Array<string>): Promise<[string, Array<Activity>]>;
     getActivity(activityId: ActivityId): Promise<Activity>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getFinancesByDate(date: string): Promise<Array<Finance>>;
+    getFinancesForDates(dates: Array<string>): Promise<[string, Array<Finance>]>;
     getHabitsByDate(date: string): Promise<Array<Habit>>;
+    getHabitsForDates(dates: Array<string>): Promise<[string, Array<Habit>]>;
     getJournalByDate(date: string): Promise<Journal | null>;
+    getJournalsForDates(dates: Array<string>): Promise<[string, Array<Journal>]>;
     getRemindersByDate(date: string): Promise<Array<Reminder>>;
+    getRemindersForDates(dates: Array<string>): Promise<[string, Array<Reminder>]>;
     getSetupStatus(): Promise<boolean>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
@@ -516,6 +521,26 @@ export class Backend implements backendInterface {
             return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getActivitiesForDates(arg0: Array<string>): Promise<[string, Array<Activity>]> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getActivitiesForDates(arg0);
+                return [
+                    result[0],
+                    from_candid_vec_n17(this._uploadFile, this._downloadFile, result[1])
+                ];
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getActivitiesForDates(arg0);
+            return [
+                result[0],
+                from_candid_vec_n17(this._uploadFile, this._downloadFile, result[1])
+            ];
+        }
+    }
     async getActivity(arg0: ActivityId): Promise<Activity> {
         if (this.processError) {
             try {
@@ -572,6 +597,26 @@ export class Backend implements backendInterface {
             return from_candid_vec_n33(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getFinancesForDates(arg0: Array<string>): Promise<[string, Array<Finance>]> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getFinancesForDates(arg0);
+                return [
+                    result[0],
+                    from_candid_vec_n33(this._uploadFile, this._downloadFile, result[1])
+                ];
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getFinancesForDates(arg0);
+            return [
+                result[0],
+                from_candid_vec_n33(this._uploadFile, this._downloadFile, result[1])
+            ];
+        }
+    }
     async getHabitsByDate(arg0: string): Promise<Array<Habit>> {
         if (this.processError) {
             try {
@@ -584,6 +629,26 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getHabitsByDate(arg0);
             return result;
+        }
+    }
+    async getHabitsForDates(arg0: Array<string>): Promise<[string, Array<Habit>]> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getHabitsForDates(arg0);
+                return [
+                    result[0],
+                    result[1]
+                ];
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getHabitsForDates(arg0);
+            return [
+                result[0],
+                result[1]
+            ];
         }
     }
     async getJournalByDate(arg0: string): Promise<Journal | null> {
@@ -600,18 +665,58 @@ export class Backend implements backendInterface {
             return from_candid_opt_n38(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getJournalsForDates(arg0: Array<string>): Promise<[string, Array<Journal>]> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getJournalsForDates(arg0);
+                return [
+                    result[0],
+                    from_candid_vec_n44(this._uploadFile, this._downloadFile, result[1])
+                ];
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getJournalsForDates(arg0);
+            return [
+                result[0],
+                from_candid_vec_n44(this._uploadFile, this._downloadFile, result[1])
+            ];
+        }
+    }
     async getRemindersByDate(arg0: string): Promise<Array<Reminder>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getRemindersByDate(arg0);
-                return from_candid_vec_n44(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getRemindersByDate(arg0);
-            return from_candid_vec_n44(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n45(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getRemindersForDates(arg0: Array<string>): Promise<[string, Array<Reminder>]> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getRemindersForDates(arg0);
+                return [
+                    result[0],
+                    from_candid_vec_n45(this._uploadFile, this._downloadFile, result[1])
+                ];
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getRemindersForDates(arg0);
+            return [
+                result[0],
+                from_candid_vec_n45(this._uploadFile, this._downloadFile, result[1])
+            ];
         }
     }
     async getSetupStatus(): Promise<boolean> {
@@ -659,14 +764,14 @@ export class Backend implements backendInterface {
     async saveCallerUserProfile(arg0: UserProfile): Promise<UserProfile> {
         if (this.processError) {
             try {
-                const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n47(this._uploadFile, this._downloadFile, arg0));
+                const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n48(this._uploadFile, this._downloadFile, arg0));
                 return from_candid_UserProfile_n25(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n47(this._uploadFile, this._downloadFile, arg0));
+            const result = await this.actor.saveCallerUserProfile(to_candid_UserProfile_n48(this._uploadFile, this._downloadFile, arg0));
             return from_candid_UserProfile_n25(this._uploadFile, this._downloadFile, result);
         }
     }
@@ -756,8 +861,8 @@ function from_candid_Journal_n39(_uploadFile: (file: ExternalBlob) => Promise<Ui
 function from_candid_Language_n29(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Language): Language {
     return from_candid_variant_n30(_uploadFile, _downloadFile, value);
 }
-function from_candid_Reminder_n45(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Reminder): Reminder {
-    return from_candid_record_n46(_uploadFile, _downloadFile, value);
+function from_candid_Reminder_n46(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Reminder): Reminder {
+    return from_candid_record_n47(_uploadFile, _downloadFile, value);
 }
 function from_candid_Theme_n27(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Theme): Theme {
     return from_candid_variant_n28(_uploadFile, _downloadFile, value);
@@ -942,7 +1047,7 @@ function from_candid_record_n40(_uploadFile: (file: ExternalBlob) => Promise<Uin
         hasAttachments: value.hasAttachments
     };
 }
-function from_candid_record_n46(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n47(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     reminderId: _ReminderId;
     name: string;
     createdAt: bigint;
@@ -1239,8 +1344,11 @@ function from_candid_vec_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
 function from_candid_vec_n33(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Finance>): Array<Finance> {
     return value.map((x)=>from_candid_Finance_n34(_uploadFile, _downloadFile, x));
 }
-function from_candid_vec_n44(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Reminder>): Array<Reminder> {
-    return value.map((x)=>from_candid_Reminder_n45(_uploadFile, _downloadFile, x));
+function from_candid_vec_n44(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Journal>): Array<Journal> {
+    return value.map((x)=>from_candid_Journal_n39(_uploadFile, _downloadFile, x));
+}
+function from_candid_vec_n45(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Reminder>): Array<Reminder> {
+    return value.map((x)=>from_candid_Reminder_n46(_uploadFile, _downloadFile, x));
 }
 function to_candid_Activity_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Activity): _Activity {
     return to_candid_record_n4(_uploadFile, _downloadFile, value);
@@ -1260,17 +1368,17 @@ function to_candid_JournalAccessType_n13(_uploadFile: (file: ExternalBlob) => Pr
 function to_candid_Journal_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Journal): _Journal {
     return to_candid_record_n12(_uploadFile, _downloadFile, value);
 }
-function to_candid_Language_n51(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Language): _Language {
-    return to_candid_variant_n52(_uploadFile, _downloadFile, value);
+function to_candid_Language_n52(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Language): _Language {
+    return to_candid_variant_n53(_uploadFile, _downloadFile, value);
 }
 function to_candid_Reminder_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Reminder): _Reminder {
     return to_candid_record_n16(_uploadFile, _downloadFile, value);
 }
-function to_candid_Theme_n49(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Theme): _Theme {
-    return to_candid_variant_n50(_uploadFile, _downloadFile, value);
+function to_candid_Theme_n50(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Theme): _Theme {
+    return to_candid_variant_n51(_uploadFile, _downloadFile, value);
 }
-function to_candid_UserProfile_n47(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserProfile): _UserProfile {
-    return to_candid_record_n48(_uploadFile, _downloadFile, value);
+function to_candid_UserProfile_n48(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserProfile): _UserProfile {
+    return to_candid_record_n49(_uploadFile, _downloadFile, value);
 }
 function to_candid_UserRole_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
     return to_candid_variant_n2(_uploadFile, _downloadFile, value);
@@ -1404,7 +1512,7 @@ function to_candid_record_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
         colorHex: value.colorHex ? candid_some(value.colorHex) : candid_none()
     };
 }
-function to_candid_record_n48(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_record_n49(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     theme: Theme;
     username: string;
     createdAt: bigint;
@@ -1420,11 +1528,11 @@ function to_candid_record_n48(_uploadFile: (file: ExternalBlob) => Promise<Uint8
     updatedAt: bigint;
 } {
     return {
-        theme: to_candid_Theme_n49(_uploadFile, _downloadFile, value.theme),
+        theme: to_candid_Theme_n50(_uploadFile, _downloadFile, value.theme),
         username: value.username,
         createdAt: value.createdAt,
         email: value.email ? candid_some(value.email) : candid_none(),
-        language: to_candid_Language_n51(_uploadFile, _downloadFile, value.language),
+        language: to_candid_Language_n52(_uploadFile, _downloadFile, value.language),
         updatedAt: value.updatedAt
     };
 }
@@ -1508,7 +1616,7 @@ function to_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8
         guest: null
     } : value;
 }
-function to_candid_variant_n50(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_variant_n51(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     __kind__: "red";
     red: null;
 } | {
@@ -1567,7 +1675,7 @@ function to_candid_variant_n50(_uploadFile: (file: ExternalBlob) => Promise<Uint
         yellow: value.yellow
     } : value;
 }
-function to_candid_variant_n52(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function to_candid_variant_n53(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     __kind__: "custom";
     custom: string;
 } | {

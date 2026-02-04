@@ -1,36 +1,23 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-04T13:31:13.038Z",
-  "summary": "Diff adds a mobile viewport hook and a custom Recharts Pie label renderer that positions percentage text inside slices, and updates DailyOverviewSection to use mobile-specific pie sizing/margins. FinanceTrends in MainDashboard is modified with an isMobile flag, but the diff is truncated so full-width behavior and desktop non-impact can’t be fully verified from provided evidence.",
-  "missing_requirements": [
+  "generatedAt": "2026-02-04T20:57:55.922Z",
+  "summary": "Footer branding text was removed by emptying the inner footer content container in `frontend/src/components/Footer.tsx`, preserving the surrounding footer/container markup. Two additional project metadata/summary files were modified, which were not requested by the BuildRequest.",
+  "missing_requirements": [],
+  "hallucinated_features": [
     {
-      "id": "REQ-4",
-      "requirement": "Fix mobile-only pie chart label overflow for all pie charts that render percentage labels (not just Daily Overview), keeping percentages visible and preventing any pie SVG/legend/tooltip overflow, without affecting desktop/tablet layout.",
-      "reason": "The diff shows updates for DailyOverviewSection pie charts and adds a reusable label renderer, but there is no visible evidence that other pie charts across the app (e.g., in other sections) were updated to use the new renderer/mobile sizing constraints. Also, no evidence is shown regarding legend/tooltip overflow handling beyond DailyOverview’s margin/radius changes.",
+      "description": "Modified project metadata/summary files unrelated to removing the footer branding text.",
+      "reason": "BuildRequest only asked to remove a specific footer text string from a selected footer element and avoid other changes; it did not request updating repository summary/state files.",
       "evidence": [
-        "frontend/src/components/sections/DailyOverviewSection.tsx",
-        "frontend/src/components/charts/PiePercentLabel.tsx"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "requirement": "On mobile, Finance Trends line chart expands to full available card width and improves x-axis label spacing/readability, with no desktop/tablet layout changes and no data/logic/tooltip-format changes.",
-      "reason": "MainDashboard.tsx shows FinanceTrends now uses useIsMobile, but the relevant chart/container layout changes are not visible in the truncated diff; therefore it’s not possible to confirm that the line chart uses full available width on mobile and that desktop/tablet remains unchanged.",
-      "evidence": [
-        "frontend/src/components/MainDashboard.tsx",
-        "frontend-file-summaries.txt"
+        "frontend-file-summaries.txt",
+        "project_state.json"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.62,
+  "confidence": 0.66,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/components/MainDashboard.tsx",
-    "frontend/src/components/charts/PiePercentLabel.tsx",
-    "frontend/src/components/sections/DailyOverviewSection.tsx",
-    "frontend/src/hooks/useIsMobile.ts",
+    "frontend/src/components/Footer.tsx",
     "project_state.json"
   ]
 }

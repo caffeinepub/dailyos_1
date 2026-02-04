@@ -15,6 +15,18 @@ export default {
             }
         },
         extend: {
+            fontFamily: {
+                sans: ['Nunito', 'system-ui', '-apple-system', 'sans-serif'],
+            },
+            fontWeight: {
+                light: '300',
+                normal: '400',
+                medium: '500',
+                semibold: '600',
+                bold: '700',
+                extrabold: '800',
+                black: '900',
+            },
             colors: {
                 border: 'oklch(var(--border))',
                 input: 'oklch(var(--input))',

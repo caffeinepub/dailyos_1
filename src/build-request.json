@@ -1,68 +1,34 @@
 {
   "kind": "build_request",
-  "title": "Mobile-only chart layout fixes (pie label overflow + Finance Trends width)",
+  "title": "Remove footer branding text without affecting layout",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-4",
-      "text": "Fix mobile-only pie chart label overflow so that all pie chart content (including percentage labels) stays fully visible and contained within the dashboard card boundaries on small screens, without changing desktop layout and without removing percentages.",
+      "id": "REQ-16",
+      "text": "Remove the footer text “© 2026. Built with using caffeine.ai” from the selected footer element at XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`, ensuring the footer’s layout/spacing and the rest of the app’s layout, spacing, and functionality remain unchanged.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-4"
         ],
         "quotes": [
-          "On mobile, pie charts (e.g. Finance Distribution) render correctly visually, but the percentage labels (e.g. “50%”) overflow the card bounds.",
-          "Ensure all pie chart content fits entirely within the card on mobile.",
-          "Apply this fix only to mobile layout",
-          "Do not remove percentages",
-          "Do not affect desktop layout",
-          "Do not let any chart element overflow its container"
+          "Delete the text at the bottom of the app:\n\n© 2026. Built with using caffeine.ai\n\n\nEnsure removing it does not affect layout, spacing, or functionality anywhere else in the app."
         ]
       },
       "acceptanceCriteria": [
-        "On mobile viewport widths, all Recharts PieChart percentage labels are fully visible and never clipped by the card container.",
-        "On mobile, no pie chart SVG elements (labels, label lines, slices, legend/tooltip containers if present) render outside the visible card content area.",
-        "Percentages remain displayed on mobile (not removed/hidden).",
-        "Desktop/tablet layout and sizing for the same charts remains visually unchanged.",
-        "The fix applies to pie charts used in the Daily Overview section and any other pie charts that render percentage labels."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Fix mobile-only Finance Trends chart sizing so the line chart expands horizontally to use the full available card width (improving readability of x-axis labels and the plotted line) without changing chart data/logic and without reducing desktop card width or affecting desktop layout.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Inside the Finance Trends card, the chart is too compressed.",
-          "Expand/stretch the chart horizontally to use the full available width of the card.",
-          "Do not change chart data or logic — layout only.",
-          "This fix applies to mobile view only.",
-          "Do not reduce card width on desktop.",
-          "Do not introduce new empty space; prioritize content filling the screen naturally."
-        ]
-      },
-      "acceptanceCriteria": [
-        "On mobile viewport widths, the Finance Trends line chart uses the full available width inside its card (no unnecessary horizontal compression).",
-        "On mobile, x-axis labels are readable and evenly spaced relative to the available width (no excessive crowding caused by container padding/margins).",
-        "No changes are made to the Finance Trends data series, query logic, or tooltip formatting—only layout/styling changes.",
-        "Desktop/tablet layout and sizing for Finance Trends remains visually unchanged."
+        "The text “© 2026. Built with using caffeine.ai” is no longer visible anywhere in the footer.",
+        "No other footer styles change (padding, borders, background, positioning remain consistent).",
+        "No changes occur to the rest of the app’s layout or functionality (no new spacing shifts, no broken links/buttons, no runtime errors)."
       ]
     }
   ],
   "constraints": [
-    "Frontend-only changes (layout/styling) for the described issues; do not change backend logic or schemas.",
-    "Apply fixes only to mobile layout; desktop layout must not be affected.",
-    "Do not remove percentage labels from pie charts.",
-    "Do not allow any chart element to overflow its container."
+    "Apply changes only to the user-selected element (XPath `/html[1]/body[1]/div[1]/div[1]/footer[1]/div[1]/div[1]`) as the source of the removed text.",
+    "Do not modify any files under `frontend/src/components/ui` or other immutable paths listed in SYSTEM_CONTEXT."
   ],
   "nonGoals": [
-    "Do not change chart data, aggregation, or query behavior.",
-    "Do not redesign dashboard cards or change desktop spacing/layout.",
-    "Do not introduce new chart types or replace the charting library."
+    "Do not redesign or remove the footer container itself unless required to remove only the specified text.",
+    "Do not introduce new footer content or additional branding."
   ],
   "imageRequirements": {
     "required": [],

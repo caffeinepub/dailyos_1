@@ -28,6 +28,29 @@ export function useGetCallerUserProfile() {
   };
 }
 
+// Setup Status - lightweight query for fast profile setup modal gating
+export function useGetSetupStatus() {
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  const query = useQuery<boolean>({
+    queryKey: ['setupStatus'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.getSetupStatus();
+    },
+    enabled: !!actor && !!identity && !actorFetching,
+    retry: false,
+    staleTime: 0, // Always fresh to catch profile changes immediately
+  });
+
+  return {
+    ...query,
+    isLoading: actorFetching || query.isLoading,
+    isFetched: !!actor && query.isFetched,
+  };
+}
+
 export function useSaveCallerUserProfile() {
   const { actor } = useActor();
   const { identity } = useInternetIdentity();
@@ -45,6 +68,7 @@ export function useSaveCallerUserProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ['setupStatus'] });
     },
     onError: (error: unknown) => {
       const message = normalizeError(error);
@@ -53,7 +77,7 @@ export function useSaveCallerUserProfile() {
   });
 }
 
-// Activities
+// Activities - Single Date
 export function useGetActivitiesByDate(date: string) {
   const { actor, isFetching } = useActor();
 
@@ -63,7 +87,32 @@ export function useGetActivitiesByDate(date: string) {
       if (!actor) return [];
       return actor.getActivitiesByDate(date);
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && date !== '',
+  });
+}
+
+// Activities - Batch Range Query
+export function useGetActivitiesForDates(dates: string[]) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Map<string, Activity[]>>({
+    queryKey: ['activitiesRange', dates.join(',')],
+    queryFn: async () => {
+      if (!actor) return new Map();
+      const [, activities] = await actor.getActivitiesForDates(dates);
+      
+      // Group activities by date
+      const activityMap = new Map<string, Activity[]>();
+      dates.forEach(date => activityMap.set(date, []));
+      
+      activities.forEach(activity => {
+        const existing = activityMap.get(activity.date) || [];
+        activityMap.set(activity.date, [...existing, activity]);
+      });
+      
+      return activityMap;
+    },
+    enabled: !!actor && !isFetching && dates.length > 0,
   });
 }
 
@@ -89,6 +138,7 @@ export function useCreateActivity() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['activities', variables.date] });
+      queryClient.invalidateQueries({ queryKey: ['activitiesRange'] });
       toast.success('Activity added');
     },
     onError: (error: unknown) => {
@@ -116,6 +166,7 @@ export function useDeleteActivity() {
     },
     onSuccess: (date) => {
       queryClient.invalidateQueries({ queryKey: ['activities', date] });
+      queryClient.invalidateQueries({ queryKey: ['activitiesRange'] });
       toast.success('Activity deleted');
     },
     onError: (error: unknown) => {
@@ -125,7 +176,7 @@ export function useDeleteActivity() {
   });
 }
 
-// Finance
+// Finance - Single Date
 export function useGetFinancesByDate(date: string) {
   const { actor, isFetching } = useActor();
 
@@ -135,7 +186,32 @@ export function useGetFinancesByDate(date: string) {
       if (!actor) return [];
       return actor.getFinancesByDate(date);
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && date !== '',
+  });
+}
+
+// Finance - Batch Range Query
+export function useGetFinancesForDates(dates: string[]) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Map<string, Finance[]>>({
+    queryKey: ['financesRange', dates.join(',')],
+    queryFn: async () => {
+      if (!actor) return new Map();
+      const [, finances] = await actor.getFinancesForDates(dates);
+      
+      // Group finances by date
+      const financeMap = new Map<string, Finance[]>();
+      dates.forEach(date => financeMap.set(date, []));
+      
+      finances.forEach(finance => {
+        const existing = financeMap.get(finance.date) || [];
+        financeMap.set(finance.date, [...existing, finance]);
+      });
+      
+      return financeMap;
+    },
+    enabled: !!actor && !isFetching && dates.length > 0,
   });
 }
 
@@ -161,6 +237,7 @@ export function useCreateFinance() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['finances'] });
+      queryClient.invalidateQueries({ queryKey: ['financesRange'] });
       toast.success('Finance entry added');
     },
     onError: (error: unknown) => {
@@ -188,6 +265,7 @@ export function useDeleteFinance() {
     },
     onSuccess: (date) => {
       queryClient.invalidateQueries({ queryKey: ['finances'] });
+      queryClient.invalidateQueries({ queryKey: ['financesRange'] });
       toast.success('Finance entry deleted');
     },
     onError: (error: unknown) => {
@@ -197,7 +275,7 @@ export function useDeleteFinance() {
   });
 }
 
-// Habits
+// Habits - Single Date
 export function useGetHabitsByDate(date: string) {
   const { actor, isFetching } = useActor();
 
@@ -207,7 +285,32 @@ export function useGetHabitsByDate(date: string) {
       if (!actor) return [];
       return actor.getHabitsByDate(date);
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && date !== '',
+  });
+}
+
+// Habits - Batch Range Query
+export function useGetHabitsForDates(dates: string[]) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Map<string, Habit[]>>({
+    queryKey: ['habitsRange', dates.join(',')],
+    queryFn: async () => {
+      if (!actor) return new Map();
+      const [, habits] = await actor.getHabitsForDates(dates);
+      
+      // Group habits by date
+      const habitMap = new Map<string, Habit[]>();
+      dates.forEach(date => habitMap.set(date, []));
+      
+      habits.forEach(habit => {
+        const existing = habitMap.get(habit.date) || [];
+        habitMap.set(habit.date, [...existing, habit]);
+      });
+      
+      return habitMap;
+    },
+    enabled: !!actor && !isFetching && dates.length > 0,
   });
 }
 
@@ -233,6 +336,7 @@ export function useCreateHabit() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['habits', variables.date] });
+      queryClient.invalidateQueries({ queryKey: ['habitsRange'] });
       toast.success('Habit added');
     },
     onError: (error: unknown) => {
@@ -259,6 +363,7 @@ export function useUpdateHabit() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['habits', variables.date] });
+      queryClient.invalidateQueries({ queryKey: ['habitsRange'] });
     },
     onError: (error: unknown) => {
       const message = normalizeError(error);
@@ -285,6 +390,7 @@ export function useDeleteHabit() {
     },
     onSuccess: (date) => {
       queryClient.invalidateQueries({ queryKey: ['habits', date] });
+      queryClient.invalidateQueries({ queryKey: ['habitsRange'] });
       toast.success('Habit deleted');
     },
     onError: (error: unknown) => {
@@ -294,7 +400,7 @@ export function useDeleteHabit() {
   });
 }
 
-// Journal
+// Journal - Single Date
 export function useGetJournalByDate(date: string) {
   const { actor, isFetching } = useActor();
 
@@ -304,7 +410,7 @@ export function useGetJournalByDate(date: string) {
       if (!actor) return null;
       return actor.getJournalByDate(date);
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && date !== '',
   });
 }
 
@@ -365,7 +471,7 @@ export function useUpdateJournal() {
   });
 }
 
-// Reminders
+// Reminders - Single Date
 export function useGetRemindersByDate(date: string) {
   const { actor, isFetching } = useActor();
 
@@ -375,20 +481,29 @@ export function useGetRemindersByDate(date: string) {
       if (!actor) return [];
       return actor.getRemindersByDate(date);
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && date !== '',
   });
 }
 
-export function useGetAllReminderDates() {
+// Reminders - Range Query for Calendar Indicators
+export function useGetRemindersForDates(dates: string[]) {
   const { actor, isFetching } = useActor();
 
   return useQuery<Set<string>>({
-    queryKey: ['reminderDates'],
+    queryKey: ['reminderDates', dates.join(',')],
     queryFn: async () => {
       if (!actor) return new Set<string>();
-      return new Set<string>();
+      const [, reminders] = await actor.getRemindersForDates(dates);
+      
+      // Return a Set of dates that have at least one reminder
+      const datesWithReminders = new Set<string>();
+      reminders.forEach(reminder => {
+        datesWithReminders.add(reminder.targetDate);
+      });
+      
+      return datesWithReminders;
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor && !isFetching && dates.length > 0,
   });
 }
 

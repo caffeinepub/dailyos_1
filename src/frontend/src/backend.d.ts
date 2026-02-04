@@ -204,13 +204,18 @@ export interface backendInterface {
     deleteJournal(journalId: JournalId): Promise<void>;
     deleteReminder(reminderId: ReminderId): Promise<void>;
     getActivitiesByDate(date: string): Promise<Array<Activity>>;
+    getActivitiesForDates(dates: Array<string>): Promise<[string, Array<Activity>]>;
     getActivity(activityId: ActivityId): Promise<Activity>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getFinancesByDate(date: string): Promise<Array<Finance>>;
+    getFinancesForDates(dates: Array<string>): Promise<[string, Array<Finance>]>;
     getHabitsByDate(date: string): Promise<Array<Habit>>;
+    getHabitsForDates(dates: Array<string>): Promise<[string, Array<Habit>]>;
     getJournalByDate(date: string): Promise<Journal | null>;
+    getJournalsForDates(dates: Array<string>): Promise<[string, Array<Journal>]>;
     getRemindersByDate(date: string): Promise<Array<Reminder>>;
+    getRemindersForDates(dates: Array<string>): Promise<[string, Array<Reminder>]>;
     getSetupStatus(): Promise<boolean>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;

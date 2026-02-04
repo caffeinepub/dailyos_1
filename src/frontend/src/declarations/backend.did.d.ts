@@ -143,13 +143,30 @@ export interface _SERVICE {
   'deleteJournal' : ActorMethod<[JournalId], undefined>,
   'deleteReminder' : ActorMethod<[ReminderId], undefined>,
   'getActivitiesByDate' : ActorMethod<[string], Array<Activity>>,
+  'getActivitiesForDates' : ActorMethod<
+    [Array<string>],
+    [string, Array<Activity>]
+  >,
   'getActivity' : ActorMethod<[ActivityId], Activity>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getFinancesByDate' : ActorMethod<[string], Array<Finance>>,
+  'getFinancesForDates' : ActorMethod<
+    [Array<string>],
+    [string, Array<Finance>]
+  >,
   'getHabitsByDate' : ActorMethod<[string], Array<Habit>>,
+  'getHabitsForDates' : ActorMethod<[Array<string>], [string, Array<Habit>]>,
   'getJournalByDate' : ActorMethod<[string], [] | [Journal]>,
+  'getJournalsForDates' : ActorMethod<
+    [Array<string>],
+    [string, Array<Journal>]
+  >,
   'getRemindersByDate' : ActorMethod<[string], Array<Reminder>>,
+  'getRemindersForDates' : ActorMethod<
+    [Array<string>],
+    [string, Array<Reminder>]
+  >,
   'getSetupStatus' : ActorMethod<[], boolean>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,

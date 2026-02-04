@@ -9,23 +9,25 @@ import RemindersSection from './components/sections/RemindersSection';
 import ProfileSetupModal from './components/ProfileSetupModal';
 import { Toaster } from './components/ui/sonner';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
-import { useGetCallerUserProfile } from './hooks/useQueries';
+import { useGetCallerUserProfile, useGetSetupStatus } from './hooks/useQueries';
 import { getTodayLocal, parseLocalDate } from './utils/localDate';
 
 export default function App() {
   const [selectedDate, setSelectedDate] = useState<string>(getTodayLocal());
   const [view, setView] = useState<'daily' | 'main'>('daily');
   
-  const { identity, loginStatus } = useInternetIdentity();
-  const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
+  const { identity } = useInternetIdentity();
+  const { data: setupNeeded, isLoading: setupLoading, isFetched: setupFetched } = useGetSetupStatus();
+  const { data: userProfile } = useGetCallerUserProfile();
 
   const isAuthenticated = !!identity;
   
-  // Show profile setup modal if:
-  // 1. User is authenticated AND profile is null (first-time setup)
-  // 2. User is authenticated AND profile exists but username is empty/whitespace (username repair)
-  const needsProfileSetup = isAuthenticated && !profileLoading && isFetched && (
-    userProfile === null || 
+  // Fast profile setup modal gating using lightweight setup status query
+  // Show modal if:
+  // 1. User is authenticated AND setup is needed (first-time, from setupStatus query)
+  // 2. User is authenticated AND profile exists but username is empty/whitespace (repair mode)
+  const needsProfileSetup = isAuthenticated && !setupLoading && setupFetched && (
+    setupNeeded === true || 
     (userProfile !== null && userProfile !== undefined && !userProfile.username.trim())
   );
 
@@ -36,11 +38,11 @@ export default function App() {
       <div className="flex flex-col min-h-screen bg-background">
         <Header view={view} onViewChange={setView} />
         
-        <main className="flex-1 container mx-auto px-4 py-6">
+        <main className="flex-1 container mx-auto px-4 py-8">
           {view === 'daily' ? (
             <>
               {/* Mobile date header - visible only on small screens */}
-              <h2 className="text-2xl font-bold mb-6 lg:hidden">
+              <h2 className="text-3xl font-extrabold mb-8 lg:hidden">
                 {displayDate.toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
@@ -49,8 +51,8 @@ export default function App() {
                 })}
               </h2>
               
-              <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
-                <div className="space-y-6 lg:sticky lg:top-6">
+              <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-8 items-start">
+                <div className="space-y-8 lg:sticky lg:top-8">
                   <CalendarView 
                     selectedDate={selectedDate} 
                     onDateSelect={setSelectedDate}

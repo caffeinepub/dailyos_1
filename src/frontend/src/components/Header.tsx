@@ -41,14 +41,14 @@ export default function Header({ view, onViewChange }: HeaderProps) {
     : '';
 
   return (
-    <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
+    <header className="border-b-2 border-primary/20 bg-card/60 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+      <div className="container mx-auto px-4 py-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-chart-1 bg-clip-text text-transparent">
+          <div className="flex items-center gap-8">
+            <h1 className="text-3xl font-black bg-gradient-to-r from-primary via-chart-2 to-chart-5 bg-clip-text text-transparent">
               DailyOS
             </h1>
-            <nav className="hidden md:flex gap-2">
+            <nav className="hidden md:flex gap-3">
               <AppButton
                 variant={view === 'main' ? 'default' : 'ghost'}
                 size="sm"
@@ -95,7 +95,7 @@ export default function Header({ view, onViewChange }: HeaderProps) {
             </AppButton>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <AppButton
               variant="ghost"
               size="icon"
@@ -110,15 +110,15 @@ export default function Header({ view, onViewChange }: HeaderProps) {
             {isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <AppButton variant="ghost" className="gap-2 min-w-[100px]">
+                  <AppButton variant="ghost" className="gap-2 min-w-[100px] font-semibold">
                     <User className="h-4 w-4" />
                     <span className="hidden sm:inline">{displayLabel}</span>
                   </AppButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>{displayLabel}</DropdownMenuLabel>
+                  <DropdownMenuLabel className="font-bold">{displayLabel}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer font-medium">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Logout</span>
                   </DropdownMenuItem>

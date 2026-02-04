@@ -1,50 +1,21 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Mobile-only Recharts layout fixes (pie label overflow + Finance Trends width)",
+  "title": "Remove footer branding text while preserving layout",
   "requirements": [
     {
-      "id": "REQ-4",
-      "summary": "Keep mobile pie-chart percentage labels fully contained within dashboard cards without affecting desktop/tablet layout.",
+      "id": "REQ-16",
+      "summary": "Remove the visible footer branding text from the selected footer element while keeping footer and app layout unchanged.",
       "acceptanceCriteria": [
-        "On mobile viewport widths, all Recharts PieChart percentage labels are fully visible and never clipped by the card container.",
-        "On mobile, no pie chart SVG elements (labels, label lines, slices, legend/tooltip containers if present) render outside the visible card content area.",
-        "Percentages remain displayed on mobile (not removed/hidden).",
-        "Desktop/tablet layout and sizing for the same charts remains visually unchanged.",
-        "The fix applies to pie charts used in the Daily Overview section and any other pie charts that render percentage labels."
+        "The text “© 2026. Built with using caffeine.ai” is no longer visible anywhere in the footer.",
+        "No other footer styles change (padding, borders, background, positioning remain consistent).",
+        "No changes occur to the rest of the app’s layout or functionality (no new spacing shifts, no broken links/buttons, no runtime errors)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/hooks/useIsMobile.ts",
-          "operation": "create",
-          "description": "Add a small viewport detection hook (aligned to Tailwind's md breakpoint) so pie charts can apply label/radius adjustments only on mobile."
-        },
-        {
-          "path": "frontend/src/components/charts/PiePercentLabel.tsx",
-          "operation": "create",
-          "description": "Create a reusable Recharts Pie custom label renderer that positions percentage text inside the slice (to prevent overflow) and supports smaller mobile-friendly font sizing."
-        },
-        {
-          "path": "frontend/src/components/sections/DailyOverviewSection.tsx",
+          "path": "frontend/src/components/Footer.tsx",
           "operation": "modify",
-          "description": "Update the Daily Overview pie charts that render percentage labels to use mobile-only containment adjustments (e.g., reduced outerRadius, mobile-specific chart margins, and the custom inside-slice percent label renderer) while preserving the current desktop label behavior and ensuring no SVG element overflows the card."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Make the Finance Trends line chart use the full available card width on mobile without changing data/logic or desktop layout.",
-      "acceptanceCriteria": [
-        "On mobile viewport widths, the Finance Trends line chart uses the full available width inside its card (no unnecessary horizontal compression).",
-        "On mobile, x-axis labels are readable and evenly spaced relative to the available width (no excessive crowding caused by container padding/margins).",
-        "No changes are made to the Finance Trends data series, query logic, or tooltip formatting—only layout/styling changes.",
-        "Desktop/tablet layout and sizing for Finance Trends remains visually unchanged."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/MainDashboard.tsx",
-          "operation": "modify",
-          "description": "Adjust Finance Trends card content padding/margins for mobile only (keeping md+ unchanged) and tune the LineChart/ResponsiveContainer layout (e.g., mobile-specific chart margins) so the chart expands horizontally to fill the card width without altering any chart data or tooltip formatting."
+          "description": "Update only the content within the selected footer element (the inner div that currently renders the branding text) to ensure “© 2026. Built with using caffeine.ai” is not visible. Preserve the existing footer container structure and spacing by keeping the element in place (e.g., render a non-visible placeholder within the same div so height/spacing remain unchanged) and ensure no interactive/footer behavior elsewhere is impacted."
         }
       ]
     }
